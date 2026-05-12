@@ -196,85 +196,107 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
         </button>
       </header>
 
-      <div className="paper-page">
-        {/* 付箋（左上） */}
-        <button
-          className={`sticky-tag${tagInfo ? '' : ' empty'}`}
-          style={tagInfo ? { background: tagInfo.bg, color: tagInfo.ink } : undefined}
-          onClick={() => setShowTagPick(true)}
-          aria-label="タグ"
-        >
-          {tagInfo ? (
-            <>
-              <Emoji char={tagInfo.emoji} size={18} /> {tagInfo.label}
-            </>
-          ) : (
-            '＋ タグ'
-          )}
-        </button>
+      <div className="paper-spread">
+        <span className="spread-gutter" aria-hidden="true" />
 
-        {/* 日付 */}
-        <div className={`page-date ${nb.calendarMode}`}>
-          {formatDate(page.date, nb.calendarMode)}
-          <small>（{weekdayJP(page.date)}）</small>
+        <div className="paper-side paper-left">
+          {/* 付箋（左ページ左上） */}
+          <button
+            className={`sticky-tag${tagInfo ? '' : ' empty'}`}
+            style={tagInfo ? { background: tagInfo.bg, color: tagInfo.ink } : undefined}
+            onClick={() => setShowTagPick(true)}
+            aria-label="タグ"
+          >
+            {tagInfo ? (
+              <>
+                <Emoji char={tagInfo.emoji} size={16} /> {tagInfo.label}
+              </>
+            ) : (
+              '＋ タグ'
+            )}
+          </button>
+
+          {/* 日付（左ページ上部・タップで西暦/和暦切替） */}
+          <button
+            className={`page-date ${nb.calendarMode}`}
+            onClick={() => {
+              const nextMode = nb.calendarMode === 'wareki' ? 'seireki' : 'wareki';
+              onChange({
+                ...data,
+                notebooks: data.notebooks.map((x) =>
+                  x.id === nb.id ? { ...x, calendarMode: nextMode } : x,
+                ),
+              });
+            }}
+            aria-label="日付の 書きかた を 切替"
+          >
+            {formatDate(page.date, nb.calendarMode)}
+            <small>（{weekdayJP(page.date)}）</small>
+          </button>
+
+          {/* 写真（左ページ中央） */}
+          <div className="photo-slot">
+            {page.photo ? (
+              <div
+                className={`framed frame-${page.frame} mask-${(page.id.charCodeAt(0) + page.id.length) % 4}`}
+                onClick={() => setShowFramePick(true)}
+              >
+                <img src={page.photo} alt="" />
+                <button
+                  className="swipe-arrow left"
+                  onClick={(e) => { e.stopPropagation(); cycleFrame(-1); }}
+                  aria-label="フレーム前"
+                >
+                  ‹
+                </button>
+                <button
+                  className="swipe-arrow right"
+                  onClick={(e) => { e.stopPropagation(); cycleFrame(1); }}
+                  aria-label="フレーム次"
+                >
+                  ›
+                </button>
+              </div>
+            ) : (
+              <label className="photo-add">
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={onPickPhoto}
+                />
+                <span>＋ しゃしん</span>
+              </label>
+            )}
+          </div>
+
+          <span className="page-num left-num">{page.date.split('-')[2]}</span>
         </div>
 
-        {/* 写真 */}
-        <div className="photo-slot">
-          {page.photo ? (
-            <div
-              className={`framed frame-${page.frame} mask-${(page.id.charCodeAt(0) + page.id.length) % 4}`}
-              onClick={() => setShowFramePick(true)}
-            >
-              <img src={page.photo} alt="" />
-              <button
-                className="swipe-arrow left"
-                onClick={(e) => { e.stopPropagation(); cycleFrame(-1); }}
-                aria-label="フレーム前"
-              >
-                ‹
-              </button>
-              <button
-                className="swipe-arrow right"
-                onClick={(e) => { e.stopPropagation(); cycleFrame(1); }}
-                aria-label="フレーム次"
-              >
-                ›
-              </button>
-            </div>
-          ) : (
-            <label className="photo-add">
-              <input
-                ref={photoInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={onPickPhoto}
-              />
-              <span>＋ しゃしんを 入れる</span>
-            </label>
-          )}
+        <div className="paper-side paper-right">
+          {/* 一言（右ページ） */}
+          <textarea
+            className="oneline"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onBlur={commitText}
+            placeholder="きょうの ひとこと…"
+            maxLength={200}
+            rows={6}
+          />
+
+          {/* スタンプ（右ページ右下） */}
+          <button
+            className={`stamp-slot${stampInfo ? '' : ' empty'}`}
+            onClick={() => setShowStampPick(true)}
+            aria-label="きょうのスタンプ"
+          >
+            {stampInfo ? <Emoji char={stampInfo.label} size={32} /> : '＋'}
+          </button>
+
+          <span className="page-num right-num">{page.date.split('-')[2]}</span>
         </div>
-
-        {/* 一言 */}
-        <textarea
-          className="oneline"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onBlur={commitText}
-          placeholder="ひとこと…"
-          maxLength={140}
-          rows={3}
-        />
-
-        {/* スタンプ（右下） */}
-        <button
-          className={`stamp-slot${stampInfo ? '' : ' empty'}`}
-          onClick={() => setShowStampPick(true)}
-          aria-label="きょうのスタンプ"
-        >
-          {stampInfo ? <Emoji char={stampInfo.label} size={36} /> : '＋'}
-        </button>
       </div>
 
       <div className="page-actions">
