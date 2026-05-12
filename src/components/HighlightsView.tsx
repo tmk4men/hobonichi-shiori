@@ -101,11 +101,14 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
       </header>
 
       {empty && (
-        <p className="empty">
-          ページが もう少し たまると、
-          <br />
-          ふと あの日に 出会えるように。
-        </p>
+        <div className="empty-state">
+          <img src={`${import.meta.env.BASE_URL}illust-empty.svg`} alt="" />
+          <p className="empty">
+            ページが もう少し たまると、
+            <br />
+            ふと あの日に 出会えるように。
+          </p>
+        </div>
       )}
 
       {sections.yearAgo.length > 0 && (

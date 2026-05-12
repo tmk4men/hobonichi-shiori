@@ -212,7 +212,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
         <div className="photo-slot">
           {page.photo ? (
             <div
-              className={`framed frame-${page.frame}`}
+              className={`framed frame-${page.frame} mask-${(page.id.charCodeAt(0) + page.id.length) % 4}`}
               onClick={() => setShowFramePick(true)}
             >
               <img src={page.photo} alt="" />

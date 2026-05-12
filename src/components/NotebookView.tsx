@@ -113,7 +113,14 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
       </button>
 
       {pages.length === 0 ? (
-        <p className="empty">まだ なにも書かれていない。</p>
+        <div className="empty-state">
+          <img src={`${import.meta.env.BASE_URL}illust-empty.svg`} alt="" />
+          <p className="empty">
+            まだ なにも書かれていない。
+            <br />
+            <small>きょうの ページから はじめてみる。</small>
+          </p>
+        </div>
       ) : (
         <ul className="page-list">
           {pages.map((p) => {
