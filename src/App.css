@@ -815,53 +815,111 @@ textarea {
   padding-bottom: 60px;
   position: relative;
   z-index: 1;
-  perspective: 1400px;
-  perspective-origin: center center;
+  perspective: 1800px;
+  perspective-origin: center 40%;
 }
 .page-screen .paper-single {
-  transition: transform 0.22s cubic-bezier(0.4, 0.05, 0.4, 1), box-shadow 0.22s, opacity 0.22s;
+  transition:
+    transform 0.34s cubic-bezier(0.45, 0.05, 0.3, 1),
+    box-shadow 0.34s ease,
+    filter 0.34s ease,
+    opacity 0.34s ease;
   transform-style: preserve-3d;
   will-change: transform;
 }
-/* 次のページへ進む（紙の右端が立つ）*/
+/* 次のページへ進む（紙の右端が手前に持ち上がる）*/
 .page-screen.flip-next .paper-single {
   transform-origin: left center;
-  transform: rotateY(-22deg) translateX(-6px);
+  transform: rotateY(-36deg) translateZ(50px) translateX(-4px);
   box-shadow:
-    16px 12px 30px rgba(60, 40, 20, 0.3),
+    32px 24px 50px rgba(40, 25, 10, 0.4),
+    18px 14px 24px rgba(40, 25, 10, 0.22),
     0 8px 22px rgba(60, 40, 20, 0.16);
-  opacity: 0.85;
+  filter: brightness(0.95);
 }
-/* 前のページへ戻る（紙の左端が立つ）*/
+/* 前のページへ戻る（紙の左端が手前に持ち上がる）*/
 .page-screen.flip-prev .paper-single {
   transform-origin: right center;
-  transform: rotateY(22deg) translateX(6px);
+  transform: rotateY(36deg) translateZ(50px) translateX(4px);
   box-shadow:
-    -16px 12px 30px rgba(60, 40, 20, 0.3),
+    -32px 24px 50px rgba(40, 25, 10, 0.4),
+    -18px 14px 24px rgba(40, 25, 10, 0.22),
     0 8px 22px rgba(60, 40, 20, 0.16);
-  opacity: 0.85;
+  filter: brightness(0.95);
 }
-/* めくり時に綴じ目側に薄い影を差す */
+
+/* めくり時：紙の端のハイライト＆影で「持ち上がった」立体感 */
 .page-screen .paper-single::before {
   content: '';
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 36px;
+  width: 80px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.22s;
+  transition: opacity 0.18s ease;
   z-index: 2;
 }
 .page-screen.flip-next .paper-single::before {
   right: 0;
-  background: linear-gradient(to left, rgba(0,0,0,0.18), transparent);
+  background: linear-gradient(
+    to left,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.15) 18%,
+    rgba(0, 0, 0, 0.12) 60%,
+    transparent 100%
+  );
   opacity: 1;
 }
 .page-screen.flip-prev .paper-single::before {
   left: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.18), transparent);
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.15) 18%,
+    rgba(0, 0, 0, 0.12) 60%,
+    transparent 100%
+  );
   opacity: 1;
+}
+
+/* 紙の影 — 下に落ちる影が大きく動いて、紙が浮いた感 */
+.page-screen .paper-single::after {
+  content: '';
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -22px;
+  height: 28px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(40, 25, 10, 0.28) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.34s ease, transform 0.34s ease;
+  z-index: -1;
+  filter: blur(2px);
+}
+.page-screen.flip-next .paper-single::after,
+.page-screen.flip-prev .paper-single::after {
+  opacity: 1;
+  transform: translateY(6px) scaleX(1.05);
+}
+.page-screen.flip-next .paper-single::after {
+  background: radial-gradient(
+    ellipse at 70% center,
+    rgba(40, 25, 10, 0.32) 0%,
+    transparent 70%
+  );
+}
+.page-screen.flip-prev .paper-single::after {
+  background: radial-gradient(
+    ellipse at 30% center,
+    rgba(40, 25, 10, 0.32) 0%,
+    transparent 70%
+  );
 }
 
 /* 単一ページ表示 */
@@ -884,38 +942,19 @@ textarea {
     inset 0 0 0 1px rgba(60, 40, 20, 0.06);
   overflow: hidden;
 }
-/* めくり感: 表示中の側にノドの影 */
-.paper-single.show-left::after,
-.paper-single.show-right::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 22px;
-  pointer-events: none;
-  z-index: 1;
+/* めくり感: 表示中の側にノドの影（box-shadow insetで実装。::afterはめくりアニメ用に温存） */
+.paper-single.show-left {
+  box-shadow:
+    inset -28px 0 28px -22px rgba(0, 0, 0, 0.2),
+    0 8px 22px rgba(60, 40, 20, 0.16),
+    inset 0 0 0 1px rgba(60, 40, 20, 0.06);
 }
-.paper-single.show-left::after {
-  /* 左ページの右端にノドの影 */
-  right: 0;
-  background: linear-gradient(
-    to left,
-    rgba(0, 0, 0, 0.16) 0%,
-    rgba(0, 0, 0, 0.06) 40%,
-    rgba(0, 0, 0, 0) 100%
-  );
+.paper-single.show-right {
+  box-shadow:
+    inset 28px 0 28px -22px rgba(0, 0, 0, 0.2),
+    0 8px 22px rgba(60, 40, 20, 0.16),
+    inset 0 0 0 1px rgba(60, 40, 20, 0.06);
 }
-.paper-single.show-right::after {
-  /* 右ページの左端にノドの影 */
-  left: 0;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.16) 0%,
-    rgba(0, 0, 0, 0.06) 40%,
-    rgba(0, 0, 0, 0) 100%
-  );
-}
-
 .paper-side {
   position: relative;
   padding: 52px 24px 36px;
