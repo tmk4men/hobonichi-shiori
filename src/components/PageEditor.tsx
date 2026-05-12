@@ -227,7 +227,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       setTimeout(() => {
         setSide('right');
         setFlipDir('none');
-      }, 140);
+      }, 200);
       return;
     }
     if (nextPage) {
@@ -237,7 +237,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       setTimeout(() => {
         setSide('left');
         onOpenPage(nextPage.id);
-      }, 140);
+      }, 200);
     }
   };
   const goPrev = () => {
@@ -249,7 +249,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       setTimeout(() => {
         setSide('left');
         setFlipDir('none');
-      }, 140);
+      }, 200);
       return;
     }
     if (prevPage) {
@@ -259,7 +259,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       setTimeout(() => {
         setSide('right');
         onOpenPage(prevPage.id);
-      }, 140);
+      }, 200);
     }
   };
 
