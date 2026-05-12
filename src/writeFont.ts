@@ -1,8 +1,17 @@
 const KEY = 'hobonichi.writefont.v1';
 
-export type WriteFont = 'yusei' | 'kurenaido';
+export type WriteFont = 'yusei' | 'kurenaido' | 'klee' | 'yomogi' | 'hachimaru' | 'kaisei';
 
-export const WRITE_FONT_DEF: { key: WriteFont; label: string; sample: string; cssFamily: string }[] = [
+export interface WriteFontDef {
+  key: WriteFont;
+  label: string;
+  sample: string;
+  cssFamily: string;
+  locked?: boolean;
+}
+
+export const WRITE_FONT_DEF: WriteFontDef[] = [
+  // 無料
   {
     key: 'yusei',
     label: 'ペン書き',
@@ -15,18 +24,53 @@ export const WRITE_FONT_DEF: { key: WriteFont; label: string; sample: string; cs
     sample: 'あいうえお かきくけこ',
     cssFamily: "'Zen Kurenaido', 'Yusei Magic', cursive",
   },
+  // 有料解放
+  {
+    key: 'klee',
+    label: 'えんぴつ',
+    sample: 'あいうえお かきくけこ',
+    cssFamily: "'Klee One', 'Yusei Magic', cursive",
+    locked: true,
+  },
+  {
+    key: 'yomogi',
+    label: 'マーカー',
+    sample: 'あいうえお かきくけこ',
+    cssFamily: "'Yomogi', 'Yusei Magic', cursive",
+    locked: true,
+  },
+  {
+    key: 'hachimaru',
+    label: 'まる文字',
+    sample: 'あいうえお かきくけこ',
+    cssFamily: "'Hachi Maru Pop', 'Yusei Magic', cursive",
+    locked: true,
+  },
+  {
+    key: 'kaisei',
+    label: '行書ふう',
+    sample: 'あいうえお かきくけこ',
+    cssFamily: "'Kaisei Decol', 'Shippori Mincho B1', serif",
+    locked: true,
+  },
 ];
+
+export function isFreeFont(key: WriteFont): boolean {
+  return !WRITE_FONT_DEF.find((f) => f.key === key)?.locked;
+}
 
 export function loadWriteFont(): WriteFont {
   try {
-    const v = localStorage.getItem(KEY);
-    return v === 'kurenaido' ? 'kurenaido' : 'yusei';
+    const v = localStorage.getItem(KEY) as WriteFont | null;
+    if (v && WRITE_FONT_DEF.some((f) => f.key === v && !f.locked)) return v;
+    return 'yusei';
   } catch {
     return 'yusei';
   }
 }
 
 export function saveWriteFont(f: WriteFont): void {
+  if (!isFreeFont(f)) return; // ロック中のものは保存しない
   try {
     localStorage.setItem(KEY, f);
   } catch {

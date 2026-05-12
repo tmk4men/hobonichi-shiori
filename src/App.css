@@ -20,6 +20,18 @@
 body[data-write-font='kurenaido'] {
   --f-write: 'Zen Kurenaido', 'Yusei Magic', 'Klee One', cursive;
 }
+body[data-write-font='klee'] {
+  --f-write: 'Klee One', 'Yusei Magic', 'Hiragino Maru Gothic ProN', cursive;
+}
+body[data-write-font='yomogi'] {
+  --f-write: 'Yomogi', 'Yusei Magic', 'Klee One', cursive;
+}
+body[data-write-font='hachimaru'] {
+  --f-write: 'Hachi Maru Pop', 'Yusei Magic', 'Klee One', cursive;
+}
+body[data-write-font='kaisei'] {
+  --f-write: 'Kaisei Decol', 'Shippori Mincho B1', serif;
+}
 * {
   box-sizing: border-box;
 }
@@ -2268,6 +2280,29 @@ textarea {
   font-size: 16px;
   letter-spacing: 0.04em;
   opacity: 0.85;
+}
+.material-font.locked {
+  background: rgba(255, 255, 255, 0.35);
+}
+.material-font.locked .material-font-sample,
+.material-font.locked .material-font-name {
+  opacity: 0.5;
+}
+.material-lock {
+  display: inline-block;
+  font-family: var(--f-display);
+  font-size: 14px;
+  margin-right: 4px;
+  opacity: 0.65;
+}
+.material-notice {
+  text-align: center;
+  font-family: var(--f-hand);
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 8px 0 0;
+  animation: rise 0.2s ease;
+  letter-spacing: 0.08em;
 }
 
 .material-icons {

@@ -13,7 +13,13 @@ export default function MaterialsView() {
     setIcon(c);
     saveIconChoice(c);
   };
-  const pickWriteFont = (f: WriteFont) => {
+  const [lockedNotice, setLockedNotice] = useState<string | null>(null);
+  const pickWriteFont = (f: WriteFont, locked?: boolean) => {
+    if (locked) {
+      setLockedNotice('まだ ひらかれていない 書体です。');
+      window.setTimeout(() => setLockedNotice(null), 2200);
+      return;
+    }
     setWriteFont(f);
     saveWriteFont(f);
     applyWriteFont(f);
@@ -88,16 +94,22 @@ export default function MaterialsView() {
           {WRITE_FONT_DEF.map((f) => (
             <button
               key={f.key}
-              className={`material-font${writeFont === f.key ? ' on' : ''}`}
-              onClick={() => pickWriteFont(f.key)}
+              className={`material-font${writeFont === f.key ? ' on' : ''}${f.locked ? ' locked' : ''}`}
+              onClick={() => pickWriteFont(f.key, f.locked)}
             >
-              <span className="material-font-name">{f.label}</span>
+              <span className="material-font-name">
+                {f.locked && <span className="material-lock" aria-hidden="true">⌷</span>}
+                {f.label}
+              </span>
               <span className="material-font-sample" style={{ fontFamily: f.cssFamily }}>
                 {f.sample}
               </span>
             </button>
           ))}
         </div>
+        {lockedNotice && (
+          <p className="material-notice">{lockedNotice}</p>
+        )}
       </section>
 
       <section className="material-section">
