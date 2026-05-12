@@ -66,7 +66,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     setShowTagPick(false);
     setShowStampPick(false);
     setShowFramePick(false);
-    const t = setTimeout(() => setFlipDir('none'), 280);
+    const t = setTimeout(() => setFlipDir('none'), 540);
     // 開いたときに view 加算（一度だけ）
     onChange(incrementView(data, pageId));
     return () => clearTimeout(t);
@@ -263,10 +263,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       unlockAudio();
       playPageFlip();
       setFlipDir('next');
-      setTimeout(() => {
-        setSide('right');
-        setFlipDir('none');
-      }, 170);
+      setTimeout(() => setSide('right'), 260);
+      setTimeout(() => setFlipDir('none'), 540);
       return;
     }
     if (nextPage) {
@@ -276,7 +274,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       setTimeout(() => {
         setSide('left');
         onOpenPage(nextPage.id);
-      }, 170);
+      }, 260);
     }
   };
   const goPrev = () => {
@@ -285,10 +283,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       unlockAudio();
       playPageFlip();
       setFlipDir('prev');
-      setTimeout(() => {
-        setSide('left');
-        setFlipDir('none');
-      }, 170);
+      setTimeout(() => setSide('left'), 260);
+      setTimeout(() => setFlipDir('none'), 540);
       return;
     }
     if (prevPage) {
@@ -298,7 +294,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       setTimeout(() => {
         setSide('right');
         onOpenPage(prevPage.id);
-      }, 170);
+      }, 260);
     }
   };
 
