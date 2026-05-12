@@ -1,6 +1,7 @@
-import type { AppData } from '../types';
-import { COVER_THEMES, STAMP_LIST } from '../types';
-import { findNotebook, formatDateJP, weekdayJP } from '../storage';
+import { useMemo } from 'react';
+import type { AppData, Page } from '../types';
+import { COVER_THEMES, STAMP_BY_KEY, TAG_BY_KEY } from '../types';
+import { findNotebook, formatDate, weekdayJP } from '../storage';
 
 interface Props {
   data: AppData;
@@ -8,10 +9,86 @@ interface Props {
   onOpenPage: (notebookId: string, pageId: string) => void;
 }
 
+function oneYearAgoIso(): { mm: string; dd: string } {
+  const d = new Date();
+  d.setFullYear(d.getFullYear() - 1);
+  return {
+    mm: String(d.getMonth() + 1).padStart(2, '0'),
+    dd: String(d.getDate()).padStart(2, '0'),
+  };
+}
+
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a.slice(0, n);
+}
+
 export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
-  const pages = data.pages
-    .filter((p) => p.highlight)
-    .sort((a, b) => (a.date < b.date ? 1 : -1));
+  const sections = useMemo(() => {
+    const all = data.pages;
+
+    const { mm, dd } = oneYearAgoIso();
+    const yearAgo = all.filter((p) => p.date.endsWith(`-${mm}-${dd}`));
+
+    const today = new Date();
+    const sixMonthsAgo = new Date(today);
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const cutoff = sixMonthsAgo.toISOString().slice(0, 10);
+    const oldEnough = all.filter((p) => p.date < cutoff);
+    const serendipity = pickRandom(oldEnough, 3);
+
+    const favorites = all
+      .filter((p) => p.highlight)
+      .sort((a, b) => (a.date < b.date ? 1 : -1))
+      .slice(0, 12);
+
+    return { yearAgo, serendipity, favorites };
+  }, [data.pages]);
+
+  const renderCard = (p: Page) => {
+    const nb = findNotebook(data, p.notebookId);
+    const theme = nb && COVER_THEMES.find((t) => t.key === nb.cover);
+    const tag = p.tag ? TAG_BY_KEY[p.tag] : undefined;
+    const stamp = p.stamp ? STAMP_BY_KEY[p.stamp] : undefined;
+    return (
+      <button
+        key={p.id}
+        className="recall-card"
+        style={theme ? { background: theme.bg, color: theme.ink } : undefined}
+        onClick={() => onOpenPage(p.notebookId, p.id)}
+      >
+        <div className="card-top">
+          {tag && (
+            <span className="row-tag" style={{ background: tag.bg, color: tag.ink }}>
+              {tag.emoji}
+            </span>
+          )}
+          <span className="card-date">
+            {nb ? formatDate(p.date, nb.calendarMode) : p.date}（{weekdayJP(p.date)}）
+          </span>
+          {stamp && <span className="card-stamp">{stamp.label}</span>}
+        </div>
+        {p.photo && (
+          <div className="card-photo">
+            <img src={p.photo} alt="" />
+          </div>
+        )}
+        <div className="card-text">{p.text || '（白紙）'}</div>
+        <div className="card-bottom">
+          <small>{nb?.title ?? ''}</small>
+        </div>
+      </button>
+    );
+  };
+
+  const empty =
+    sections.yearAgo.length === 0 &&
+    sections.serendipity.length === 0 &&
+    sections.favorites.length === 0;
 
   return (
     <div className="highlights-screen">
@@ -19,43 +96,37 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
         <button className="link" onClick={onBack}>
           ← 本棚
         </button>
-        <h1>★ ハイライト</h1>
+        <h1>ハイライト</h1>
         <span style={{ width: 60 }} />
       </header>
 
-      {pages.length === 0 ? (
-        <p className="empty">まだ ★を つけた ページが ありません。</p>
-      ) : (
-        <ul className="highlight-list">
-          {pages.map((p) => {
-            const nb = findNotebook(data, p.notebookId);
-            const theme = nb && COVER_THEMES.find((t) => t.key === nb.cover);
-            return (
-              <li key={p.id}>
-                <button
-                  className="highlight-row"
-                  style={theme ? { background: theme.bg, color: theme.ink } : undefined}
-                  onClick={() => onOpenPage(p.notebookId, p.id)}
-                >
-                  <div className="row-top">
-                    <span className="nb-name">{nb?.title ?? '?'}</span>
-                    <span className="date">
-                      {formatDateJP(p.date)}（{weekdayJP(p.date)}）
-                    </span>
-                  </div>
-                  <div className="row-mid">
-                    {p.stamps.slice(0, 5).map((s) => (
-                      <span key={s} className="stamp">
-                        {STAMP_LIST.find((x) => x.key === s)?.label}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="row-bot">{p.text.slice(0, 80) || '（白紙）'}</div>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+      {empty && (
+        <p className="empty">
+          ページが もう少し たまると、
+          <br />
+          ふと あの日に 出会えるように。
+        </p>
+      )}
+
+      {sections.yearAgo.length > 0 && (
+        <section className="recall-section">
+          <h2 className="recall-h">1年前の 今日</h2>
+          <div className="recall-grid">{sections.yearAgo.map(renderCard)}</div>
+        </section>
+      )}
+
+      {sections.serendipity.length > 0 && (
+        <section className="recall-section">
+          <h2 className="recall-h">ふと 出会う</h2>
+          <div className="recall-grid">{sections.serendipity.map(renderCard)}</div>
+        </section>
+      )}
+
+      {sections.favorites.length > 0 && (
+        <section className="recall-section">
+          <h2 className="recall-h">★ お気に入り</h2>
+          <div className="recall-grid">{sections.favorites.map(renderCard)}</div>
+        </section>
       )}
     </div>
   );

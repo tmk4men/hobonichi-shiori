@@ -17,7 +17,13 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights }: Prop
 
   const create = () => {
     const t = title.trim() || `ノート ${data.notebooks.length + 1}`;
-    const nb: Notebook = { id: newId(), title: t, cover, createdAt: Date.now() };
+    const nb: Notebook = {
+      id: newId(),
+      title: t,
+      cover,
+      calendarMode: 'seireki',
+      createdAt: Date.now(),
+    };
     onChange({ ...data, notebooks: [...data.notebooks, nb] });
     setTitle('');
     setCover('beige');
@@ -26,44 +32,57 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights }: Prop
 
   const themeOf = (c: CoverTheme) => COVER_THEMES.find((t) => t.key === c)!;
 
+  // 棚ごとに最大4冊
+  const rows: Notebook[][] = [];
+  for (let i = 0; i < data.notebooks.length; i += 4) {
+    rows.push(data.notebooks.slice(i, i + 4));
+  }
+  if (rows.length === 0) rows.push([]);
+
   return (
     <div className="shelf">
       <header className="appbar">
         <h1>ほぼ日のしおり</h1>
         <button className="link" onClick={onShowHighlights}>
-          ★ ハイライト
+          ハイライト
         </button>
       </header>
 
       <p className="shelf-hint">本棚から、ノートをひらく。</p>
 
-      <div className="books">
-        {data.notebooks.map((nb) => {
-          const t = themeOf(nb.cover);
-          const count = data.pages.filter((p) => p.notebookId === nb.id).length;
-          return (
-            <button
-              key={nb.id}
-              className="book"
-              style={{ background: t.bg, color: t.ink }}
-              onClick={() => onOpen(nb.id)}
-            >
-              <span className="book-title">{nb.title}</span>
-              <span className="book-meta">{count}ページ</span>
-            </button>
-          );
-        })}
-
-        <button className="book book-new" onClick={() => setCreating(true)}>
-          <span className="plus">＋</span>
-          <span>新しいノート</span>
-        </button>
+      <div className="bookshelf">
+        {rows.map((row, ri) => (
+          <div key={ri} className="shelf-row">
+            <div className="shelf-spines">
+              {row.map((nb) => {
+                const t = themeOf(nb.cover);
+                return (
+                  <button
+                    key={nb.id}
+                    className="spine"
+                    style={{ background: t.bg, color: t.ink }}
+                    onClick={() => onOpen(nb.id)}
+                  >
+                    <span className="spine-title">{nb.title}</span>
+                  </button>
+                );
+              })}
+              {ri === rows.length - 1 && row.length < 4 && (
+                <button className="spine spine-new" onClick={() => setCreating(true)}>
+                  <span>＋</span>
+                  <span className="spine-newlabel">あたらしく</span>
+                </button>
+              )}
+            </div>
+            <div className="shelf-plank" />
+          </div>
+        ))}
       </div>
 
       {creating && (
         <div className="modal-bg" onClick={() => setCreating(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>新しいノート</h2>
+            <h2>あたらしい ノート</h2>
             <label className="field">
               <span>タイトル</span>
               <input

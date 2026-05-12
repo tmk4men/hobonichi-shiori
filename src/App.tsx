@@ -61,6 +61,9 @@ export default function App() {
       data={data}
       pageId={screen.pageId}
       onBack={() => setScreen({ kind: 'notebook', notebookId: screen.notebookId })}
+      onOpenPage={(pageId) =>
+        setScreen({ kind: 'page', notebookId: screen.notebookId, pageId })
+      }
       onChange={setData}
     />
   );

@@ -1,7 +1,15 @@
 import { useState } from 'react';
-import type { AppData, Page } from '../types';
-import { COVER_THEMES, STAMP_LIST } from '../types';
-import { findNotebook, formatDateJP, newId, pagesOf, sortPagesByDate, todayStr, weekdayJP } from '../storage';
+import type { AppData, CalendarMode, Page } from '../types';
+import { COVER_THEMES, STAMP_BY_KEY, TAG_BY_KEY } from '../types';
+import {
+  findNotebook,
+  formatDate,
+  newId,
+  pagesOf,
+  sortPagesByDate,
+  todayStr,
+  weekdayJP,
+} from '../storage';
 
 interface Props {
   data: AppData;
@@ -16,6 +24,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
   const pages = sortPagesByDate(pagesOf(data, notebookId));
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(nb?.title ?? '');
+  const [showSettings, setShowSettings] = useState(false);
 
   if (!nb) {
     return (
@@ -40,8 +49,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
       notebookId,
       date: today,
       text: '',
-      stamps: [],
-      tags: [],
+      frame: 'plain',
       highlight: false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -57,6 +65,13 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
       notebooks: data.notebooks.map((x) => (x.id === nb.id ? { ...x, title: t } : x)),
     });
     setEditingTitle(false);
+  };
+
+  const setCalendarMode = (mode: CalendarMode) => {
+    onChange({
+      ...data,
+      notebooks: data.notebooks.map((x) => (x.id === nb.id ? { ...x, calendarMode: mode } : x)),
+    });
   };
 
   const removeNotebook = () => {
@@ -88,8 +103,8 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
         ) : (
           <h1 onClick={() => { setTitleDraft(nb.title); setEditingTitle(true); }}>{nb.title}</h1>
         )}
-        <button className="link danger" onClick={removeNotebook}>
-          削除
+        <button className="link" onClick={() => setShowSettings(true)}>
+          ⋯
         </button>
       </header>
 
@@ -101,25 +116,70 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
         <p className="empty">まだ なにも書かれていない。</p>
       ) : (
         <ul className="page-list">
-          {pages.map((p) => (
-            <li key={p.id}>
-              <button className="page-row" onClick={() => onOpenPage(p.id)}>
-                <span className="date">
-                  {formatDateJP(p.date)}<small>（{weekdayJP(p.date)}）</small>
-                </span>
-                <span className="preview">
-                  {p.highlight && <span className="star">★</span>}
-                  {p.stamps.slice(0, 3).map((s) => (
-                    <span key={s} className="stamp">
-                      {STAMP_LIST.find((x) => x.key === s)?.label}
+          {pages.map((p) => {
+            const t = p.tag ? TAG_BY_KEY[p.tag] : undefined;
+            const s = p.stamp ? STAMP_BY_KEY[p.stamp] : undefined;
+            return (
+              <li key={p.id}>
+                <button className="page-row" onClick={() => onOpenPage(p.id)}>
+                  <span className="row-left">
+                    {t && (
+                      <span className="row-tag" style={{ background: t.bg, color: t.ink }}>
+                        {t.emoji}
+                      </span>
+                    )}
+                  </span>
+                  <span className="row-center">
+                    <span className="date">
+                      {formatDate(p.date, nb.calendarMode)}
+                      <small>（{weekdayJP(p.date)}）</small>
                     </span>
-                  ))}
-                  <span className="text">{p.text.slice(0, 40) || '（白紙）'}</span>
-                </span>
-              </button>
-            </li>
-          ))}
+                    <span className="preview">
+                      {p.highlight && <span className="star">★</span>}
+                      <span className="text">{p.text.slice(0, 50) || '（白紙）'}</span>
+                    </span>
+                  </span>
+                  <span className="row-right">
+                    {s && <span className="row-stamp">{s.label}</span>}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
+      )}
+
+      {showSettings && (
+        <div className="sheet-bg" onClick={() => setShowSettings(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <h3>ノートの 設定</h3>
+            <div className="field">
+              <span>日付の 書きかた</span>
+              <div className="seg">
+                <button
+                  className={`seg-btn${nb.calendarMode === 'seireki' ? ' on' : ''}`}
+                  onClick={() => setCalendarMode('seireki')}
+                >
+                  西暦 (2025.05.12)
+                </button>
+                <button
+                  className={`seg-btn${nb.calendarMode === 'wareki' ? ' on' : ''}`}
+                  onClick={() => setCalendarMode('wareki')}
+                >
+                  和暦 (令和7年5月12日)
+                </button>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="link danger" onClick={removeNotebook}>
+                このノートを削除
+              </button>
+              <button className="ghost" onClick={() => setShowSettings(false)}>
+                とじる
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

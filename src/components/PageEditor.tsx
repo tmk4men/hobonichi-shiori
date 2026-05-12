@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
-import type { AppData, Page, Stamp } from '../types';
-import { COVER_THEMES, STAMP_LIST } from '../types';
-import { findNotebook, findPage, formatDateJP, weekdayJP } from '../storage';
+import type { AppData, Page, PhotoFrame, Stamp, Tag } from '../types';
+import { COVER_THEMES, FRAME_DEF, STAMP_DEF, TAG_BY_KEY, TAG_DEF } from '../types';
+import {
+  findNotebook,
+  findPage,
+  formatDate,
+  pagesOf,
+  sortPagesByDate,
+  weekdayJP,
+} from '../storage';
 
 interface Props {
   data: AppData;
   pageId: string;
   onBack: () => void;
+  onOpenPage: (pageId: string) => void;
   onChange: (next: AppData) => void;
 }
 
@@ -35,17 +43,23 @@ async function compressImage(file: File, maxSize = 1280, quality = 0.78): Promis
   }
 }
 
-export default function PageEditor({ data, pageId, onBack, onChange }: Props) {
+export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange }: Props) {
   const page = findPage(data, pageId);
   const nb = page ? findNotebook(data, page.notebookId) : undefined;
-  const [tagInput, setTagInput] = useState('');
   const photoInputRef = useRef<HTMLInputElement>(null);
-
-  // autosave on text change is implemented via patch()
   const [text, setText] = useState(page?.text ?? '');
+  const [showTagPick, setShowTagPick] = useState(false);
+  const [showStampPick, setShowStampPick] = useState(false);
+  const [showFramePick, setShowFramePick] = useState(false);
+  const [flipDir, setFlipDir] = useState<'none' | 'next' | 'prev'>('none');
 
   useEffect(() => {
     setText(page?.text ?? '');
+    setShowTagPick(false);
+    setShowStampPick(false);
+    setShowFramePick(false);
+    const t = setTimeout(() => setFlipDir('none'), 280);
+    return () => clearTimeout(t);
   }, [pageId]);
 
   if (!page || !nb) {
@@ -58,6 +72,10 @@ export default function PageEditor({ data, pageId, onBack, onChange }: Props) {
   }
 
   const theme = COVER_THEMES.find((t) => t.key === nb.cover)!;
+  const pages = sortPagesByDate(pagesOf(data, page.notebookId));
+  const idx = pages.findIndex((p) => p.id === page.id);
+  const prevPage = idx >= 0 && idx + 1 < pages.length ? pages[idx + 1] : null; // sorted desc
+  const nextPage = idx > 0 ? pages[idx - 1] : null;
 
   const patch = (changes: Partial<Page>) => {
     onChange({
@@ -72,23 +90,24 @@ export default function PageEditor({ data, pageId, onBack, onChange }: Props) {
     if (text !== page.text) patch({ text });
   };
 
-  const toggleStamp = (s: Stamp) => {
-    const has = page.stamps.includes(s);
-    patch({ stamps: has ? page.stamps.filter((x) => x !== s) : [...page.stamps, s] });
+  const setTag = (t: Tag | undefined) => {
+    patch({ tag: t });
+    setShowTagPick(false);
+  };
+  const setStamp = (s: Stamp | undefined) => {
+    patch({ stamp: s });
+    setShowStampPick(false);
+  };
+  const setFrame = (f: PhotoFrame) => {
+    patch({ frame: f });
+    setShowFramePick(false);
   };
 
-  const addTag = () => {
-    const t = tagInput.trim().replace(/^#/, '');
-    if (!t) return;
-    if (page.tags.includes(t)) {
-      setTagInput('');
-      return;
-    }
-    patch({ tags: [...page.tags, t] });
-    setTagInput('');
+  const cycleFrame = (dir: 1 | -1) => {
+    const i = FRAME_DEF.findIndex((f) => f.key === page.frame);
+    const n = (i + dir + FRAME_DEF.length) % FRAME_DEF.length;
+    patch({ frame: FRAME_DEF[n].key });
   };
-
-  const removeTag = (t: string) => patch({ tags: page.tags.filter((x) => x !== t) });
 
   const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -115,13 +134,54 @@ export default function PageEditor({ data, pageId, onBack, onChange }: Props) {
     onBack();
   };
 
+  const goNext = () => {
+    if (!nextPage) return;
+    commitText();
+    setFlipDir('next');
+    setTimeout(() => onOpenPage(nextPage.id), 140);
+  };
+  const goPrev = () => {
+    if (!prevPage) return;
+    commitText();
+    setFlipDir('prev');
+    setTimeout(() => onOpenPage(prevPage.id), 140);
+  };
+
+  // touch swipe
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touch.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touch.current.x;
+    const dy = t.clientY - touch.current.y;
+    touch.current = null;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+    if (dx < 0) goNext();
+    else goPrev();
+  };
+
+  const tagInfo = page.tag ? TAG_BY_KEY[page.tag] : undefined;
+  const stampInfo = page.stamp ? STAMP_DEF.find((s) => s.key === page.stamp) : undefined;
+
   return (
-    <div className="page-screen" style={{ background: theme.bg, color: theme.ink }}>
+    <div
+      className={`page-screen flip-${flipDir}`}
+      style={{ background: theme.bg, color: theme.ink }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       <header className="appbar">
         <button className="link" onClick={() => { commitText(); onBack(); }}>
-          ← もどる
+          ← もくじ
         </button>
-        <h1>{formatDateJP(page.date)} <small>（{weekdayJP(page.date)}）</small></h1>
+        <span className="paging">
+          <button className="pager" onClick={goPrev} disabled={!prevPage} aria-label="前">‹</button>
+          <button className="pager" onClick={goNext} disabled={!nextPage} aria-label="次">›</button>
+        </span>
         <button
           className={`link star-toggle${page.highlight ? ' on' : ''}`}
           onClick={() => patch({ highlight: !page.highlight })}
@@ -131,35 +191,44 @@ export default function PageEditor({ data, pageId, onBack, onChange }: Props) {
         </button>
       </header>
 
-      <div className="paper">
-        <textarea
-          className="page-text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onBlur={commitText}
-          placeholder="きょうの ことを 書く…"
-          rows={10}
-        />
+      <div className="paper-page">
+        {/* 付箋（左上） */}
+        <button
+          className={`sticky-tag${tagInfo ? '' : ' empty'}`}
+          style={tagInfo ? { background: tagInfo.bg, color: tagInfo.ink } : undefined}
+          onClick={() => setShowTagPick(true)}
+          aria-label="タグ"
+        >
+          {tagInfo ? `${tagInfo.emoji} ${tagInfo.label}` : '＋ タグ'}
+        </button>
 
-        <div className="stamps">
-          {STAMP_LIST.map((s) => (
-            <button
-              key={s.key}
-              className={`stamp-btn${page.stamps.includes(s.key) ? ' on' : ''}`}
-              onClick={() => toggleStamp(s.key)}
-              aria-label={s.key}
-            >
-              {s.label}
-            </button>
-          ))}
+        {/* 日付 */}
+        <div className="page-date">
+          {formatDate(page.date, nb.calendarMode)}
+          <small>（{weekdayJP(page.date)}）</small>
         </div>
 
-        <div className="photo-area">
+        {/* 写真 */}
+        <div className="photo-slot">
           {page.photo ? (
-            <div className="photo-wrap">
+            <div
+              className={`framed frame-${page.frame}`}
+              onClick={() => setShowFramePick(true)}
+            >
               <img src={page.photo} alt="" />
-              <button className="ghost small" onClick={removePhoto}>
-                しゃしんを 外す
+              <button
+                className="swipe-arrow left"
+                onClick={(e) => { e.stopPropagation(); cycleFrame(-1); }}
+                aria-label="フレーム前"
+              >
+                ‹
+              </button>
+              <button
+                className="swipe-arrow right"
+                onClick={(e) => { e.stopPropagation(); cycleFrame(1); }}
+                aria-label="フレーム次"
+              >
+                ›
               </button>
             </div>
           ) : (
@@ -176,34 +245,108 @@ export default function PageEditor({ data, pageId, onBack, onChange }: Props) {
           )}
         </div>
 
-        <div className="tags">
-          {page.tags.map((t) => (
-            <button key={t} className="tag" onClick={() => removeTag(t)}>
-              #{t} <span className="x">×</span>
-            </button>
-          ))}
-          <input
-            className="tag-input"
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
-                e.preventDefault();
-                addTag();
-              }
-            }}
-            onBlur={addTag}
-            placeholder="タグ"
-            maxLength={20}
-          />
-        </div>
+        {/* 一言 */}
+        <textarea
+          className="oneline"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onBlur={commitText}
+          placeholder="ひとこと…"
+          maxLength={140}
+          rows={3}
+        />
+
+        {/* スタンプ（右下） */}
+        <button
+          className={`stamp-slot${stampInfo ? '' : ' empty'}`}
+          onClick={() => setShowStampPick(true)}
+          aria-label="きょうのスタンプ"
+        >
+          {stampInfo ? stampInfo.label : '＋'}
+        </button>
       </div>
 
       <div className="page-actions">
+        {page.photo && (
+          <button className="ghost small" onClick={removePhoto}>
+            しゃしんを 外す
+          </button>
+        )}
         <button className="link danger" onClick={removePage}>
           このページを削除
         </button>
       </div>
+
+      {showTagPick && (
+        <div className="sheet-bg" onClick={() => setShowTagPick(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <h3>タグ</h3>
+            <div className="tag-pick">
+              {TAG_DEF.map((t) => (
+                <button
+                  key={t.key}
+                  className={`tag-opt${page.tag === t.key ? ' on' : ''}`}
+                  style={{ background: t.bg, color: t.ink }}
+                  onClick={() => setTag(t.key)}
+                >
+                  {t.emoji} {t.label}
+                </button>
+              ))}
+              {page.tag && (
+                <button className="tag-opt clear" onClick={() => setTag(undefined)}>
+                  外す
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showStampPick && (
+        <div className="sheet-bg" onClick={() => setShowStampPick(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <h3>きょうの空気</h3>
+            <div className="stamp-pick">
+              {STAMP_DEF.map((s) => (
+                <button
+                  key={s.key}
+                  className={`stamp-opt${page.stamp === s.key ? ' on' : ''}`}
+                  onClick={() => setStamp(s.key)}
+                >
+                  {s.label}
+                </button>
+              ))}
+              {page.stamp && (
+                <button className="stamp-opt clear" onClick={() => setStamp(undefined)}>
+                  外す
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFramePick && (
+        <div className="sheet-bg" onClick={() => setShowFramePick(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <h3>しゃしんの ふち</h3>
+            <div className="frame-pick">
+              {FRAME_DEF.map((f) => (
+                <button
+                  key={f.key}
+                  className={`frame-opt${page.frame === f.key ? ' on' : ''}`}
+                  onClick={() => setFrame(f.key)}
+                >
+                  <span className={`frame-thumb frame-${f.key}`}>
+                    <span className="thumb-img" />
+                  </span>
+                  <span className="frame-name">{f.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
