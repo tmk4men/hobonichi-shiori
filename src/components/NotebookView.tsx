@@ -12,6 +12,8 @@ import {
 } from '../storage';
 import Emoji from './Emoji';
 
+const MAX_PAGES_PER_NOTEBOOK = 45;
+
 interface Props {
   data: AppData;
   notebookId: string;
@@ -38,6 +40,8 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
 
   const theme = COVER_THEMES.find((t) => t.key === nb.cover)!;
 
+  const atPageLimit = pages.length >= MAX_PAGES_PER_NOTEBOOK;
+
   const addPage = () => {
     const today = todayStr();
     const existing = pages.find((p) => p.date === today);
@@ -45,6 +49,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
       onOpenPage(existing.id);
       return;
     }
+    if (atPageLimit) return;
     const page: Page = {
       id: newId(),
       notebookId,
@@ -111,9 +116,17 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
         </button>
       </header>
 
-      <button className="add-today" onClick={addPage}>
-        ＋ きょうの ページ をひらく
-      </button>
+      {atPageLimit ? (
+        <p className="quiet-limit">
+          このノートは{MAX_PAGES_PER_NOTEBOOK}ページまで。
+          <br />
+          <small>これ以上 のこすには、新しい本を 開いてください。</small>
+        </p>
+      ) : (
+        <button className="add-today" onClick={addPage}>
+          ＋ きょうの ページ をひらく
+        </button>
+      )}
 
       {pages.length === 0 ? (
         <div className="empty-state">

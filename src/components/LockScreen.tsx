@@ -1,50 +1,65 @@
-import { useState } from 'react';
-import { loadLock, verifyPassword } from '../auth';
+import { useEffect, useState } from 'react';
+import { verifyPassword } from '../auth';
+import { iconUrl, loadIconChoice } from '../iconChoice';
 
 interface Props {
   onUnlock: () => void;
 }
 
 export default function LockScreen({ onUnlock }: Props) {
-  const lock = loadLock();
-  const [pw, setPw] = useState('');
+  const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const icon = loadIconChoice();
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!pw) return;
-    setBusy(true);
-    const ok = await verifyPassword(pw);
-    setBusy(false);
-    if (ok) onUnlock();
-    else {
-      setError('あいことばが ちがいます。');
-      setPw('');
-    }
+  const press = (d: string) => {
+    setError('');
+    setPin((c) => (c.length < 4 ? c + d : c));
   };
+  const del = () => {
+    setError('');
+    setPin((c) => c.slice(0, -1));
+  };
+
+  useEffect(() => {
+    if (pin.length !== 4) return;
+    let cancelled = false;
+    (async () => {
+      setBusy(true);
+      const ok = await verifyPassword(pin);
+      if (cancelled) return;
+      setBusy(false);
+      if (ok) onUnlock();
+      else {
+        setError('ちがいます。');
+        setTimeout(() => !cancelled && setPin(''), 350);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [pin, onUnlock]);
 
   return (
     <div className="lock-screen">
       <div className="lock-card">
-        <div className="lock-illust">📔</div>
+        <img className="lock-icon" src={iconUrl(icon)} alt="" />
         <h1>ほぼ日のしおり</h1>
-        <p className="lock-sub">あいことばを 入れて、ひらく。</p>
-        <form onSubmit={submit} className="lock-form">
-          <input
-            type="password"
-            value={pw}
-            onChange={(e) => { setPw(e.target.value); setError(''); }}
-            autoFocus
-            inputMode="text"
-            placeholder="あいことば"
-          />
-          {lock?.hint && <p className="lock-hint">ヒント: {lock.hint}</p>}
-          {error && <p className="error">{error}</p>}
-          <button className="primary" type="submit" disabled={busy || !pw}>
-            ひらく
-          </button>
-        </form>
+        <p className="lock-sub">4けたの 数字を 入れて ひらく。</p>
+
+        <div className="pin-dots">
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} className={`pin-dot${i < pin.length ? ' on' : ''}`} />
+          ))}
+        </div>
+        {error && <p className="error" style={{ textAlign: 'center' }}>{error}</p>}
+
+        <div className="pin-keypad lock-keypad">
+          {['1','2','3','4','5','6','7','8','9'].map((k) => (
+            <button key={k} className="pin-key" onClick={() => press(k)} disabled={busy}>{k}</button>
+          ))}
+          <span />
+          <button className="pin-key" onClick={() => press('0')} disabled={busy}>0</button>
+          <button className="pin-key pin-back" onClick={del} disabled={busy} aria-label="削除">←</button>
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,9 @@ import {
   pickBookmarkOfTheDay,
 } from '../storage';
 import Emoji from './Emoji';
+import MaterialsView from './MaterialsView';
+
+const MAX_NOTEBOOKS_FREE = 2;
 
 interface Props {
   data: AppData;
@@ -21,9 +24,11 @@ interface Props {
 
 export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onShowHighlights, onOpenPage, onOpenMenu }: Props) {
   void _onShowHighlights;
+  const [tab, setTab] = useState<'shelf' | 'materials'>('shelf');
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState('');
   const [cover, setCover] = useState<CoverTheme>('beige');
+  const atLimit = data.notebooks.length >= MAX_NOTEBOOKS_FREE;
 
   const bookmark = useMemo(() => {
     const cards = buildHighlights(data);
@@ -35,6 +40,7 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
   }, [data]);
 
   const create = () => {
+    if (atLimit) return;
     const t = title.trim() || `ノート ${data.notebooks.length + 1}`;
     const nb: Notebook = {
       id: newId(),
@@ -74,7 +80,32 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
         </button>
       </header>
 
-      {bookmark && (
+      <div className="tabs" role="tablist">
+        <button
+          className={`tab${tab === 'shelf' ? ' on' : ''}`}
+          onClick={() => setTab('shelf')}
+        >
+          本棚
+        </button>
+        <button
+          className={`tab${tab === 'materials' ? ' on' : ''}`}
+          onClick={() => setTab('materials')}
+        >
+          素材
+        </button>
+      </div>
+
+      {tab === 'materials' && <MaterialsView />}
+
+      {tab === 'shelf' && atLimit && (
+        <p className="quiet-limit">
+          いまは {MAX_NOTEBOOKS_FREE}冊まで。
+          <br />
+          <small>これ以上 つくるには、買い切りで 解放されます。</small>
+        </p>
+      )}
+
+      {tab === 'shelf' && bookmark && (
         <button
           className="bookmark"
           onClick={() => onOpenPage(bookmark.page.notebookId, bookmark.page.id)}
@@ -141,7 +172,7 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
                   </button>
                 );
               })}
-              {ri === rows.length - 1 && row.length < 4 && (
+              {ri === rows.length - 1 && row.length < 4 && !atLimit && (
                 <button className="spine spine-new" onClick={() => setCreating(true)}>
                   <span className="plus">＋</span>
                   <span className="spine-newlabel">あたらしく</span>

@@ -9,6 +9,7 @@ import HighlightsView from './components/HighlightsView';
 import NotebookManager from './components/NotebookManager';
 import Menu from './components/Menu';
 import PasswordSheet from './components/PasswordSheet';
+import IconChooser from './components/IconChooser';
 import LockScreen from './components/LockScreen';
 import './App.css';
 
@@ -24,6 +25,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>({ kind: 'shelf' });
   const [showMenu, setShowMenu] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showIconChooser, setShowIconChooser] = useState(false);
   const [hasPassword, setHasPassword] = useState<boolean>(() => !!loadLock());
   const [unlocked, setUnlocked] = useState<boolean>(() => !loadLock());
 
@@ -105,6 +107,7 @@ export default function App() {
           onShowHighlights={() => setScreen({ kind: 'highlights' })}
           onShowNotebookManager={() => setScreen({ kind: 'manager' })}
           onShowPassword={() => setShowPassword(true)}
+          onShowIconChooser={() => setShowIconChooser(true)}
         />
       )}
       {showPassword && (
@@ -112,6 +115,9 @@ export default function App() {
           onClose={() => setShowPassword(false)}
           onChanged={() => setHasPassword(!!loadLock())}
         />
+      )}
+      {showIconChooser && (
+        <IconChooser onClose={() => setShowIconChooser(false)} />
       )}
     </>
   );

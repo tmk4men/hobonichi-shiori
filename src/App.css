@@ -1587,6 +1587,15 @@ textarea {
   font-size: 44px;
   margin-bottom: 6px;
 }
+.lock-icon {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 22px;
+  margin: 0 auto 12px;
+  display: block;
+  box-shadow: 0 6px 18px rgba(60, 40, 20, 0.25);
+}
 .lock-card h1 {
   font-family: var(--f-display);
   font-weight: 700;
@@ -1631,6 +1640,190 @@ textarea {
   font-family: var(--f-hand);
   font-size: 13px;
   margin: 0;
+}
+
+/* --- タブ（本棚 / 素材） --- */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin: 12px 18px 0;
+  border-bottom: 1px dashed rgba(60, 40, 20, 0.2);
+}
+.tab {
+  flex: 1;
+  padding: 12px 0 10px;
+  font-family: var(--f-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  opacity: 0.5;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.tab.on {
+  opacity: 1;
+  border-bottom-color: var(--ink);
+}
+
+/* --- 素材タブ --- */
+.materials {
+  padding: 6px 18px 60px;
+  position: relative;
+  z-index: 1;
+}
+.material-section {
+  margin: 20px 0 28px;
+}
+.material-h {
+  font-family: var(--f-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin: 0 0 4px;
+  padding-left: 10px;
+  border-left: 3px solid var(--ink);
+}
+.material-sub {
+  font-family: var(--f-hand);
+  font-size: 12px;
+  opacity: 0.6;
+  margin: 0 0 14px;
+  padding-left: 13px;
+}
+.material-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.material-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  font-family: var(--f-stick);
+  font-size: 13px;
+  border-radius: 2px;
+  box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.15);
+  rotate: -2deg;
+}
+.material-stamps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.material-stamp {
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+.material-frames {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.material-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.material-frame .framed {
+  max-width: 130px;
+}
+.frame-placeholder {
+  width: 110px;
+  height: 80px;
+  background: linear-gradient(135deg, #c9a989 0%, #8e6f55 100%);
+  border-radius: 2px;
+}
+.material-frame-name {
+  font-family: var(--f-body);
+  font-size: 12px;
+  opacity: 0.75;
+  letter-spacing: 0.1em;
+}
+.material-covers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.material-cover {
+  aspect-ratio: 3 / 4;
+  border-radius: 4px;
+  box-shadow:
+    inset 4px 0 0 rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px;
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+}
+.material-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+}
+.material-date {
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+.material-date.seireki { font-family: var(--f-num); font-weight: 700; font-size: 22px; }
+.material-date.wareki { font-family: var(--f-pen); }
+.material-date small { font-size: 12px; opacity: 0.55; margin-left: 4px; }
+
+/* --- icon chooser --- */
+.icon-pick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.icon-opt {
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 3px solid transparent;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.05);
+}
+.icon-opt.on {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--paper) inset;
+}
+.icon-opt img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- quiet limit notice --- */
+.quiet-limit {
+  text-align: center;
+  margin: 28px 24px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  border: 1px dashed rgba(60, 40, 20, 0.2);
+  font-family: var(--f-hand);
+  font-size: 14px;
+  line-height: 1.9;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+.quiet-limit small {
+  font-size: 12px;
+  opacity: 0.65;
 }
 
 /* --- 共有用キャプチャ（画面外） --- */
