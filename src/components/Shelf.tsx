@@ -160,45 +160,49 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
         );
       })()}
 
-      <p className="shelf-hint">本棚から、ノートをひらく。</p>
+      {tab === 'shelf' && (
+        <>
+          <p className="shelf-hint">本棚から、ノートをひらく。</p>
 
-      <div className="bookshelf">
-        <div className="shelf-side left" />
-        <div className="shelf-side right" />
-        {rows.map((row, ri) => (
-          <div key={ri} className="shelf-row">
-            <div className="shelf-spines">
-              {row.map((nb, i) => {
-                const t = themeOf(nb.cover);
-                const tilt = ((i % 3) - 1) * 0.8; // -0.8 / 0 / 0.8 deg
-                return (
-                  <button
-                    key={nb.id}
-                    className="spine"
-                    style={{
-                      background: t.bg,
-                      color: t.ink,
-                      transform: `rotate(${tilt}deg)`,
-                    }}
-                    onClick={() => onOpen(nb.id)}
-                  >
-                    <span className="spine-band band-top" />
-                    <span className="spine-title">{nb.title}</span>
-                    <span className="spine-band band-bottom" />
-                  </button>
-                );
-              })}
-              {ri === rows.length - 1 && row.length < 4 && !atLimit && (
-                <button className="spine spine-new" onClick={() => setCreating(true)}>
-                  <span className="plus">＋</span>
-                  <span className="spine-newlabel">あたらしく</span>
-                </button>
-              )}
-            </div>
-            <div className="shelf-plank" />
+          <div className="bookshelf">
+            <div className="shelf-side left" />
+            <div className="shelf-side right" />
+            {rows.map((row, ri) => (
+              <div key={ri} className="shelf-row">
+                <div className="shelf-spines">
+                  {row.map((nb, i) => {
+                    const t = themeOf(nb.cover);
+                    const tilt = ((i % 3) - 1) * 0.8;
+                    return (
+                      <button
+                        key={nb.id}
+                        className="spine"
+                        style={{
+                          background: t.bg,
+                          color: t.ink,
+                          transform: `rotate(${tilt}deg)`,
+                        }}
+                        onClick={() => onOpen(nb.id)}
+                      >
+                        <span className="spine-band band-top" />
+                        <span className="spine-title">{nb.title}</span>
+                        <span className="spine-band band-bottom" />
+                      </button>
+                    );
+                  })}
+                  {ri === rows.length - 1 && row.length < 4 && !atLimit && (
+                    <button className="spine spine-new" onClick={() => setCreating(true)}>
+                      <span className="plus">＋</span>
+                      <span className="spine-newlabel">あたらしく</span>
+                    </button>
+                  )}
+                </div>
+                <div className="shelf-plank" />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
       {creating && (
         <div className="modal-bg" onClick={() => setCreating(false)}>

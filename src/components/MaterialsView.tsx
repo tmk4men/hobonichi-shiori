@@ -85,7 +85,6 @@ export default function MaterialsView() {
 
       <section className="material-section">
         <h2 className="material-h">アプリの アイコン</h2>
-        <p className="material-sub">ロック画面に 出る絵を 選ぶ。</p>
         <div className="material-icons">
           {(['a', 'b'] as IconChoice[]).map((c) => (
             <button

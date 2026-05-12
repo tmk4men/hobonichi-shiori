@@ -301,13 +301,28 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           <button className="pager" onClick={goPrev} disabled={!canGoPrev} aria-label="前">‹</button>
           <button className="pager" onClick={goNext} disabled={!canGoNext} aria-label="次">›</button>
         </span>
-        <button
-          className={`link star-toggle${page.highlight ? ' on' : ''}`}
-          onClick={() => patch({ highlight: !page.highlight })}
-          aria-label="ハイライト"
-        >
-          ★
-        </button>
+        <span className="appbar-actions">
+          <button
+            className="icon-btn"
+            onClick={shareSpread}
+            disabled={sharing}
+            aria-label="画像で共有"
+            title="画像で共有"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 16 L12 4" />
+              <path d="M7 9 L12 4 L17 9" />
+              <path d="M5 14 L5 20 L19 20 L19 14" />
+            </svg>
+          </button>
+          <button
+            className={`icon-btn star-toggle${page.highlight ? ' on' : ''}`}
+            onClick={() => patch({ highlight: !page.highlight })}
+            aria-label="ハイライト"
+          >
+            ★
+          </button>
+        </span>
       </header>
 
       <div className={`paper-single show-${side}`}>
@@ -328,23 +343,25 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             )}
           </button>
 
-          {/* 日付（タップで西暦/和暦切替） */}
-          <button
-            className={`page-date ${nb.calendarMode}`}
-            onClick={() => {
-              const nextMode = nb.calendarMode === 'wareki' ? 'seireki' : 'wareki';
-              onChange({
-                ...data,
-                notebooks: data.notebooks.map((x) =>
-                  x.id === nb.id ? { ...x, calendarMode: nextMode } : x,
-                ),
-              });
-            }}
-            aria-label="日付の 書きかた を 切替"
-          >
-            {formatDate(page.date, nb.calendarMode)}
-            <small>（{weekdayJP(page.date)}）</small>
-          </button>
+          {/* 日付（左ページのみ・タップで西暦/和暦切替） */}
+          {!isRight && (
+            <button
+              className={`page-date ${nb.calendarMode}`}
+              onClick={() => {
+                const nextMode = nb.calendarMode === 'wareki' ? 'seireki' : 'wareki';
+                onChange({
+                  ...data,
+                  notebooks: data.notebooks.map((x) =>
+                    x.id === nb.id ? { ...x, calendarMode: nextMode } : x,
+                  ),
+                });
+              }}
+              aria-label="日付の 書きかた を 切替"
+            >
+              {formatDate(page.date, nb.calendarMode)}
+              <small>（{weekdayJP(page.date)}）</small>
+            </button>
+          )}
 
           {/* 写真（上部） */}
           <div className="photo-slot">
@@ -427,9 +444,6 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             しゃしんを 外す
           </button>
         )}
-        <button className="link" onClick={shareSpread} disabled={sharing}>
-          {sharing ? '画像にしています…' : '画像で 共有'}
-        </button>
         <button className="link danger" onClick={removePage}>
           このページを削除
         </button>
@@ -457,10 +471,12 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
                     {tagInfo.emoji} {tagInfo.label}
                   </span>
                 )}
-                <div className={`cap-date ${nb.calendarMode}`}>
-                  {formatDate(page.date, nb.calendarMode)}
-                  <small>（{weekdayJP(page.date)}）</small>
-                </div>
+                {s === 'left' && (
+                  <div className={`cap-date ${nb.calendarMode}`}>
+                    {formatDate(page.date, nb.calendarMode)}
+                    <small>（{weekdayJP(page.date)}）</small>
+                  </div>
+                )}
                 <div className="cap-photo">
                   {ph && (
                     <div className={`framed frame-${fr} mask-${(page.id.charCodeAt(0) + page.id.length + (s === 'right' ? 1 : 0)) % 4}`}>

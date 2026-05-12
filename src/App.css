@@ -156,6 +156,32 @@ textarea {
   display: inline-flex;
   gap: 4px;
 }
+.appbar-actions {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  opacity: 0.78;
+  background: transparent;
+}
+.icon-btn:hover { background: rgba(0,0,0,0.05); opacity: 1; }
+.icon-btn:disabled { opacity: 0.35; cursor: default; }
+.icon-btn svg { display: block; }
+.icon-btn.star-toggle { font-size: 20px; opacity: 0.32; }
+.icon-btn.star-toggle.on {
+  opacity: 1;
+  color: #d49b00;
+  text-shadow: 0 0 10px rgba(212, 155, 0, 0.4);
+  animation: pop 0.25s ease;
+}
 .pager {
   width: 32px;
   height: 32px;
