@@ -12,6 +12,8 @@
   --f-body: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
     'BIZ UDPGothic', system-ui, sans-serif;
   --f-hand: 'Klee One', 'Hiragino Maru Gothic ProN', cursive;
+  --f-write: 'Yusei Magic', 'Klee One', 'Hiragino Maru Gothic ProN', cursive;
+  --f-pen: 'Zen Kurenaido', 'Yusei Magic', 'Klee One', cursive;
   --f-stick: 'Yomogi', 'Klee One', 'Hiragino Maru Gothic ProN', cursive;
   --f-num: 'Caveat', 'Klee One', cursive;
 }
@@ -686,15 +688,15 @@ textarea {
   min-width: 0;
 }
 .row-center .date {
-  font-weight: 600;
-  font-size: 14px;
-  font-family: var(--f-hand);
-  letter-spacing: 0.04em;
+  font-weight: 500;
+  font-size: 15px;
+  font-family: var(--f-pen);
+  letter-spacing: 0.06em;
 }
 .row-center .date.seireki {
   font-family: var(--f-num);
   font-weight: 700;
-  font-size: 17px;
+  font-size: 18px;
   letter-spacing: 0.02em;
 }
 .row-center .date small {
@@ -712,7 +714,9 @@ textarea {
 }
 .row-center .preview .star { color: #d49b00; }
 .row-center .preview .text {
-  opacity: 0.7;
+  opacity: 0.72;
+  font-family: var(--f-write);
+  letter-spacing: 0.04em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -845,10 +849,10 @@ textarea {
 .sticky-tag.empty::after { display: none; }
 
 .page-date {
-  font-size: 17px;
-  letter-spacing: 0.1em;
+  font-size: 18px;
+  letter-spacing: 0.12em;
   font-weight: 500;
-  font-family: var(--f-hand);
+  font-family: var(--f-pen);
   margin: 4px 0 22px;
   padding: 0 14px 6px;
   border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
@@ -1074,24 +1078,24 @@ textarea {
 /* 一言 */
 .oneline {
   width: 100%;
-  min-height: 90px;
+  min-height: 96px;
   border: none;
   background: transparent;
   outline: none;
   resize: none;
-  font-size: 16px;
-  line-height: 32px;
+  font-size: 17px;
+  line-height: 34px;
   color: inherit;
   background-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent 31px,
-    rgba(60, 40, 20, 0.18) 32px
+    transparent 33px,
+    rgba(60, 40, 20, 0.18) 34px
   );
-  padding: 0 4px;
-  font-family: var(--f-hand);
+  padding: 2px 4px;
+  font-family: var(--f-write);
   font-weight: 400;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
 }
 .oneline::placeholder {
   opacity: 0.38;
@@ -1237,10 +1241,10 @@ textarea {
 }
 .card-text {
   font-size: 14px;
-  line-height: 1.85;
+  line-height: 1.9;
   min-height: 22px;
-  font-family: var(--f-hand);
-  letter-spacing: 0.02em;
+  font-family: var(--f-write);
+  letter-spacing: 0.04em;
   position: relative;
 }
 .card-bottom {
@@ -1324,9 +1328,10 @@ textarea {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: var(--f-hand);
-  font-size: 15px;
-  font-weight: 500;
+  font-family: var(--f-write);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   padding: 4px 0 2px;
 }
 .bm-tag {
