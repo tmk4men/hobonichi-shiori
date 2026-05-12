@@ -12,6 +12,7 @@ import {
   weekdayJP,
 } from '../storage';
 import Emoji from './Emoji';
+import { playPageFlip, playStamp, playWrite, unlockAudio } from '../sfx';
 
 interface Props {
   data: AppData;
@@ -120,6 +121,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     setShowTagPick(false);
   };
   const setStamp = (s: Stamp | undefined) => {
+    if (s) playStamp();
     patch({ stamp: s });
     setShowStampPick(false);
   };
@@ -212,6 +214,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const goNext = () => {
     commitText();
     if (side === 'left') {
+      unlockAudio();
+      playPageFlip();
       setFlipDir('next');
       setTimeout(() => {
         setSide('right');
@@ -220,6 +224,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       return;
     }
     if (nextPage) {
+      unlockAudio();
+      playPageFlip();
       setFlipDir('next');
       setTimeout(() => {
         setSide('left');
@@ -230,6 +236,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const goPrev = () => {
     commitText();
     if (side === 'right') {
+      unlockAudio();
+      playPageFlip();
       setFlipDir('prev');
       setTimeout(() => {
         setSide('left');
@@ -238,6 +246,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       return;
     }
     if (prevPage) {
+      unlockAudio();
+      playPageFlip();
       setFlipDir('prev');
       setTimeout(() => {
         setSide('right');
@@ -370,7 +380,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           <textarea
             className="oneline"
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => { setText(e.target.value); playWrite(); }}
             onBlur={commitText}
             placeholder={isRight ? 'もうすこし、書いてみる…' : 'きょうの ひとこと…'}
             maxLength={400}
@@ -408,40 +418,50 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
         </button>
       </div>
 
-      {/* キャプチャ用の見開きレンダリング（画面外） */}
-      <div ref={captureRef} className="capture-spread" aria-hidden="true">
-        {(['left', 'right'] as const).map((s) => {
-          const ph = s === 'right' ? page.photoRight : page.photo;
-          const fr = (s === 'right' ? page.frameRight : page.frame) ?? 'plain';
-          const tx = s === 'right' ? (page.textRight ?? '') : page.text;
-          return (
-            <div key={s} className={`capture-page capture-${s}`}>
-              {tagInfo && (
-                <span
-                  className="cap-tag"
-                  style={{ background: tagInfo.bg, color: tagInfo.ink }}
-                >
-                  {tagInfo.emoji} {tagInfo.label}
-                </span>
-              )}
-              <div className={`cap-date ${nb.calendarMode}`}>
-                {formatDate(page.date, nb.calendarMode)}
-                <small>（{weekdayJP(page.date)}）</small>
-              </div>
-              <div className="cap-photo">
-                {ph && (
-                  <div className={`framed frame-${fr} mask-${(page.id.charCodeAt(0) + page.id.length + (s === 'right' ? 1 : 0)) % 4}`}>
-                    <img src={ph} alt="" crossOrigin="anonymous" />
-                  </div>
+      {/* キャプチャ用の見開きレンダリング（画面外）— 印刷物風 */}
+      <div ref={captureRef} className="capture-frame" aria-hidden="true">
+        <span className="cap-corner cap-corner-tl" />
+        <span className="cap-corner cap-corner-tr" />
+        <span className="cap-corner cap-corner-bl" />
+        <span className="cap-corner cap-corner-br" />
+        <div className="capture-spread">
+          {(['left', 'right'] as const).map((s) => {
+            const ph = s === 'right' ? page.photoRight : page.photo;
+            const fr = (s === 'right' ? page.frameRight : page.frame) ?? 'plain';
+            const tx = s === 'right' ? (page.textRight ?? '') : page.text;
+            return (
+              <div key={s} className={`capture-page capture-${s}`}>
+                {tagInfo && (
+                  <span
+                    className="cap-tag"
+                    style={{ background: tagInfo.bg, color: tagInfo.ink }}
+                  >
+                    {tagInfo.emoji} {tagInfo.label}
+                  </span>
+                )}
+                <div className={`cap-date ${nb.calendarMode}`}>
+                  {formatDate(page.date, nb.calendarMode)}
+                  <small>（{weekdayJP(page.date)}）</small>
+                </div>
+                <div className="cap-photo">
+                  {ph && (
+                    <div className={`framed frame-${fr} mask-${(page.id.charCodeAt(0) + page.id.length + (s === 'right' ? 1 : 0)) % 4}`}>
+                      <img src={ph} alt="" crossOrigin="anonymous" />
+                    </div>
+                  )}
+                </div>
+                <div className="cap-text">{tx}</div>
+                {s === 'right' && stampInfo && (
+                  <div className="cap-stamp">{stampInfo.label}</div>
                 )}
               </div>
-              <div className="cap-text">{tx}</div>
-              {s === 'right' && stampInfo && (
-                <div className="cap-stamp">{stampInfo.label}</div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+        <div className="capture-foot">
+          <span className="cap-foot-title">{nb.title}</span>
+          <span className="cap-foot-brand">ほぼ日のしおり</span>
+        </div>
       </div>
 
       {showTagPick && (

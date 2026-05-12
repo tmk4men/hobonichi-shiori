@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { isMuted, setMuted } from '../sfx';
+
 interface Props {
   hasPassword: boolean;
   onClose: () => void;
@@ -15,6 +18,12 @@ export default function Menu({
   onShowPassword,
   onShowIconChooser,
 }: Props) {
+  const [muted, setMutedState] = useState(isMuted());
+  const toggleSound = () => {
+    const next = !muted;
+    setMutedState(next);
+    setMuted(next);
+  };
   return (
     <div className="sheet-bg" onClick={onClose}>
       <div className="sheet menu-sheet" onClick={(e) => e.stopPropagation()}>
@@ -74,6 +83,13 @@ export default function Menu({
               <span className="menu-mark">◯</span>
               <span className="menu-label">ロックの 絵</span>
               <span className="menu-sub">ひらく とき、最初に 見える絵を 選ぶ。</span>
+            </button>
+          </li>
+          <li>
+            <button className="menu-item" onClick={toggleSound}>
+              <span className="menu-mark">♪</span>
+              <span className="menu-label">音 ({muted ? 'オフ' : 'オン'})</span>
+              <span className="menu-sub">紙の音、ペン先、スタンプの音。</span>
             </button>
           </li>
         </ul>

@@ -13,7 +13,11 @@ interface Props {
 export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
   const cards = useMemo(() => buildHighlights(data), [data]);
 
-  const renderCard = (p: Page) => {
+  const renderCard = (p: Page, i: number) => {
+    // 安定したシードで紙片の見た目を変える
+    const seed = (p.id.charCodeAt(0) + p.id.charCodeAt(1 % p.id.length)) % 7;
+    const tilt = ((seed - 3) * 0.9).toFixed(2); // -2.7°〜+2.7°
+    const offset = ((seed % 3) - 1) * 4; // -4/0/+4 px
     const nb = findNotebook(data, p.notebookId);
     const theme = nb && COVER_THEMES.find((t) => t.key === nb.cover);
     const tag = p.tag ? TAG_BY_KEY[p.tag] : undefined;
@@ -22,7 +26,12 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
       <button
         key={p.id}
         className="recall-card"
-        style={theme ? { background: theme.bg, color: theme.ink } : undefined}
+        style={{
+          ...(theme ? { background: theme.bg, color: theme.ink } : {}),
+          ['--tilt' as string]: `${tilt}deg`,
+          ['--y-offset' as string]: `${offset}px`,
+          animationDelay: `${i * 80}ms`,
+        }}
         onClick={() => onOpenPage(p.notebookId, p.id)}
       >
         <div className="card-top">
@@ -77,7 +86,9 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
         cards.map((card) => (
           <section key={card.id} className="recall-section">
             <h2 className="recall-h">{card.title}</h2>
-            <div className="recall-grid">{card.pages.map(renderCard)}</div>
+            <div className="recall-scatter">
+              {card.pages.map((p, i) => renderCard(p, i))}
+            </div>
           </section>
         ))
       )}

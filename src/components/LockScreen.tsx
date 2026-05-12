@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { verifyPassword } from '../auth';
 import { iconUrl, loadIconChoice } from '../iconChoice';
+import { playUnlock, unlockAudio } from '../sfx';
 
 interface Props {
   onUnlock: () => void;
@@ -13,6 +14,7 @@ export default function LockScreen({ onUnlock }: Props) {
   const icon = loadIconChoice();
 
   const press = (d: string) => {
+    unlockAudio();
     setError('');
     setPin((c) => (c.length < 4 ? c + d : c));
   };
@@ -29,8 +31,10 @@ export default function LockScreen({ onUnlock }: Props) {
       const ok = await verifyPassword(pin);
       if (cancelled) return;
       setBusy(false);
-      if (ok) onUnlock();
-      else {
+      if (ok) {
+        playUnlock();
+        onUnlock();
+      } else {
         setError('ちがいます。');
         setTimeout(() => !cancelled && setPin(''), 350);
       }

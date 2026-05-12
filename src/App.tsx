@@ -11,6 +11,8 @@ import Menu from './components/Menu';
 import PasswordSheet from './components/PasswordSheet';
 import IconChooser from './components/IconChooser';
 import LockScreen from './components/LockScreen';
+import Welcome from './components/Welcome';
+import type { Notebook } from './types';
 import './App.css';
 
 type Screen =
@@ -35,6 +37,17 @@ export default function App() {
 
   if (!unlocked) {
     return <LockScreen onUnlock={() => setUnlocked(true)} />;
+  }
+
+  if (data.notebooks.length === 0) {
+    return (
+      <Welcome
+        onComplete={(nb: Notebook) => {
+          setData({ ...data, notebooks: [nb] });
+          setScreen({ kind: 'notebook', notebookId: nb.id });
+        }}
+      />
+    );
   }
 
   const goPage = (notebookId: string, pageId: string) =>
