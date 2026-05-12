@@ -16,6 +16,8 @@ export interface Page {
   highlight: boolean;
   createdAt: number;
   updatedAt: number;
+  viewCount: number;
+  lastViewedAt: number;
 }
 
 export interface Notebook {

@@ -5,6 +5,7 @@ import {
   findNotebook,
   findPage,
   formatDate,
+  incrementView,
   pagesOf,
   sortPagesByDate,
   weekdayJP,
@@ -60,7 +61,10 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     setShowStampPick(false);
     setShowFramePick(false);
     const t = setTimeout(() => setFlipDir('none'), 280);
+    // 開いたときに view 加算（一度だけ）
+    onChange(incrementView(data, pageId));
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
 
   if (!page || !nb) {

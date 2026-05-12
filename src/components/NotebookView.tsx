@@ -54,6 +54,8 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
       highlight: false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
+      viewCount: 1,
+      lastViewedAt: Date.now(),
     };
     onChange({ ...data, pages: [...data.pages, page] });
     onOpenPage(page.id);

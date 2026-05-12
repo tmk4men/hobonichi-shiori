@@ -1,19 +1,38 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { AppData, CoverTheme, Notebook } from '../types';
 import { COVER_THEMES } from '../types';
-import { newId } from '../storage';
+import {
+  buildHighlights,
+  findNotebook,
+  formatDate,
+  newId,
+  pickBookmarkOfTheDay,
+} from '../storage';
+import Emoji from './Emoji';
 
 interface Props {
   data: AppData;
   onOpen: (id: string) => void;
   onChange: (next: AppData) => void;
   onShowHighlights: () => void;
+  onOpenPage: (notebookId: string, pageId: string) => void;
+  onOpenMenu: () => void;
 }
 
-export default function Shelf({ data, onOpen, onChange, onShowHighlights }: Props) {
+export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onShowHighlights, onOpenPage, onOpenMenu }: Props) {
+  void _onShowHighlights;
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState('');
   const [cover, setCover] = useState<CoverTheme>('beige');
+
+  const bookmark = useMemo(() => {
+    const cards = buildHighlights(data);
+    const card = pickBookmarkOfTheDay(cards);
+    if (!card || card.pages.length === 0) return null;
+    const page = card.pages[0];
+    const nb = findNotebook(data, page.notebookId);
+    return { card, page, nb };
+  }, [data]);
 
   const create = () => {
     const t = title.trim() || `ノート ${data.notebooks.length + 1}`;
@@ -42,11 +61,57 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights }: Prop
   return (
     <div className="shelf">
       <header className="appbar">
+        <span style={{ width: 36 }} />
         <h1>ほぼ日のしおり</h1>
-        <button className="link" onClick={onShowHighlights}>
-          ハイライト
+        <button
+          className="link hamburger"
+          onClick={onOpenMenu}
+          aria-label="メニュー"
+        >
+          <span />
+          <span />
+          <span />
         </button>
       </header>
+
+      {bookmark && (
+        <button
+          className="bookmark"
+          onClick={() => onOpenPage(bookmark.page.notebookId, bookmark.page.id)}
+        >
+          <span className="bm-ribbon" />
+          <span className="bm-title">{bookmark.card.title}</span>
+          <span className="bm-page">
+            {bookmark.page.tag && (
+              <span className="bm-tag">
+                <Emoji
+                  char={
+                    // map tag emoji
+                    (
+                      {
+                        meal: '🍚',
+                        outing: '🚶',
+                        happy: '✨',
+                        play: '🎮',
+                        daily: '☁️',
+                      } as Record<string, string>
+                    )[bookmark.page.tag]
+                  }
+                  size={16}
+                />
+              </span>
+            )}
+            <span className="bm-text">
+              {bookmark.page.text.slice(0, 30) || '（白紙のページ）'}
+            </span>
+          </span>
+          <span className="bm-date">
+            {bookmark.nb
+              ? formatDate(bookmark.page.date, bookmark.nb.calendarMode)
+              : bookmark.page.date}
+          </span>
+        </button>
+      )}
 
       <p className="shelf-hint">本棚から、ノートをひらく。</p>
 
