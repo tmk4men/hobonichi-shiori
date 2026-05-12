@@ -13,7 +13,7 @@ import {
 } from '../storage';
 import Emoji from './Emoji';
 import ConfirmDialog from './ConfirmDialog';
-import { playPageFlip, playStamp, playWrite, unlockAudio } from '../sfx';
+import { playBookOpen, playPageFlip, playStamp, playWrite, unlockAudio } from '../sfx';
 import type { WriteFont } from '../writeFont';
 import { WRITE_FONT_DEF, applyWriteFont, isFreeFont, loadWriteFont, saveWriteFont } from '../writeFont';
 
@@ -81,6 +81,14 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   };
   const [flipDir, setFlipDir] = useState<'none' | 'next' | 'prev'>('none');
   const [side, setSide] = useState<'left' | 'right'>('left');
+  // ノートを開く演出（mount時のみ）
+  const [isOpening, setIsOpening] = useState(true);
+  useEffect(() => {
+    unlockAudio();
+    playBookOpen();
+    const t = setTimeout(() => setIsOpening(false), 760);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     setText(page?.text ?? '');
@@ -360,11 +368,22 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
 
   return (
     <div
-      className={`page-screen flip-${flipDir}`}
+      className={`page-screen flip-${flipDir}${isOpening ? ' opening' : ''}`}
       style={{ background: theme.bg, color: theme.ink }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      {isOpening && (
+        <div
+          className="book-open-cover"
+          style={{ background: theme.bg, color: theme.ink }}
+          aria-hidden="true"
+        >
+          <span className="book-open-band band-top" />
+          <span className="book-open-title">{nb.title}</span>
+          <span className="book-open-band band-bottom" />
+        </div>
+      )}
       <header className="appbar">
         <button className="link" onClick={() => { commitText(); onBack(); }}>
           ← もくじ
@@ -520,8 +539,15 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             placeholder={isRight ? 'もうすこし、書いてみる…' : 'きょうの ひとこと…'}
             rows={3}
           />
-          <div className={`char-counter${isOverLimit ? ' over' : ''}`} aria-live="polite">
-            {isOverLimit ? `${remaining}` : `${[...text].length} / ${MAX_TEXT_LEN}`}
+          <div
+            className={`char-counter${isOverLimit ? ' over' : ''}${remaining === 0 ? ' exact' : ''}`}
+            aria-live="polite"
+          >
+            {(() => {
+              if (remaining < 0) return `${-remaining}文字 あふれてる`;
+              if (remaining === 0) return 'ぴったり 30文字';
+              return `あと ${remaining}文字`;
+            })()}
           </div>
 
           {/* スタンプ（右ページの右下のみ） */}

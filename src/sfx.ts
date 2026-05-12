@@ -69,6 +69,28 @@ export function playPageFlip(): void {
   playNoise(c, 0.18, 4, 2400, 0.22);
 }
 
+export function playBookOpen(): void {
+  const c = ctx();
+  if (!c) return;
+  const now = c.currentTime;
+  // 低めのコトッ（表紙が起き上がる）
+  const osc = c.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(170, now);
+  osc.frequency.exponentialRampToValueAtTime(80, now + 0.18);
+  const og = c.createGain();
+  og.gain.setValueAtTime(0.25, now);
+  og.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+  osc.connect(og).connect(c.destination);
+  osc.start(now);
+  osc.stop(now + 0.25);
+  // 紙ずれノイズを少し遅らせて
+  setTimeout(() => {
+    const cc = ctx();
+    if (cc) playNoise(cc, 0.22, 3, 1800, 0.16);
+  }, 180);
+}
+
 export function playWrite(): void {
   const c = ctx();
   if (!c) return;

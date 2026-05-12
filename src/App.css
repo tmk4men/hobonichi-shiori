@@ -985,6 +985,100 @@ textarea {
   perspective: 2000px;
   perspective-origin: center 45%;
 }
+
+/* --- 本を開く演出（mount時のみ・約0.76s） --- */
+.book-open-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-family: var(--f-display);
+  animation: bookOpen 0.76s cubic-bezier(0.42, 0, 0.18, 1) forwards;
+  box-shadow:
+    inset 0 0 0 6px rgba(255, 255, 255, 0.05),
+    inset 0 0 80px rgba(0, 0, 0, 0.18),
+    8px 0 28px rgba(0, 0, 0, 0.35);
+}
+.book-open-cover::before {
+  /* 表紙の織り目テクスチャ */
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(0, 0, 0, 0.04) 3px, rgba(0, 0, 0, 0.04) 4px),
+    repeating-linear-gradient(90deg, transparent 0, transparent 3px, rgba(255, 255, 255, 0.03) 3px, rgba(255, 255, 255, 0.03) 4px);
+  opacity: 0.7;
+}
+.book-open-cover::after {
+  /* 表紙の左端（綴じ目）のハイライト */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.35), transparent);
+  pointer-events: none;
+}
+.book-open-title {
+  font-size: clamp(20px, 5vw, 28px);
+  letter-spacing: 0.32em;
+  font-weight: 600;
+  text-align: center;
+  padding: 0 24px;
+  z-index: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+.book-open-band {
+  width: 70%;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.32;
+  z-index: 1;
+}
+@keyframes bookOpen {
+  0% {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+  60% {
+    transform: rotateY(-120deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: rotateY(-176deg);
+    opacity: 0;
+  }
+}
+
+/* 紙の登場：表紙が開いてから少し遅れてフェードイン＆軽く沈み込み */
+.page-screen.opening .paper-single {
+  animation: paperRise 0.55s 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.page-screen.opening.flip-next .paper-single,
+.page-screen.opening.flip-prev .paper-single {
+  /* めくり中の混在は避ける */
+  animation: paperRise 0.55s 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes paperRise {
+  0% {
+    transform: translateY(28px) scale(0.965);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
 .page-screen .paper-single {
   transform-style: preserve-3d;
   will-change: transform, box-shadow, filter;
@@ -1158,20 +1252,47 @@ textarea {
 .paper-single {
   position: relative;
   margin: 14px 14px 0;
-  background: #fffaea;
+  background-color: #fff8e3;
   /* ページ内テキストは表紙色を継承せず、紙のインクに固定 */
   color: var(--ink);
   background-image:
-    /* 紙の縁の薄いシミ */
-    radial-gradient(ellipse 200px 120px at 0% 0%, rgba(120, 80, 40, 0.05), transparent 70%),
-    radial-gradient(ellipse 220px 140px at 100% 100%, rgba(120, 80, 40, 0.06), transparent 70%),
-    radial-gradient(ellipse 180px 100px at 100% 0%, rgba(120, 80, 40, 0.035), transparent 70%),
+    /* 小さな foxing（紙の経年シミ） */
+    radial-gradient(circle 3px at 18% 26%, rgba(150, 100, 50, 0.14), transparent 75%),
+    radial-gradient(circle 2px at 72% 64%, rgba(150, 100, 50, 0.12), transparent 75%),
+    radial-gradient(circle 2.5px at 84% 22%, rgba(150, 100, 50, 0.11), transparent 75%),
+    radial-gradient(circle 1.5px at 32% 78%, rgba(150, 100, 50, 0.10), transparent 75%),
+    radial-gradient(circle 2px at 56% 12%, rgba(150, 100, 50, 0.08), transparent 75%),
+    radial-gradient(circle 3px at 12% 88%, rgba(150, 100, 50, 0.10), transparent 75%),
+    radial-gradient(circle 1.5px at 88% 48%, rgba(150, 100, 50, 0.09), transparent 75%),
+    radial-gradient(circle 2px at 44% 92%, rgba(150, 100, 50, 0.09), transparent 75%),
+    /* 縁のシミ・焼け */
+    radial-gradient(ellipse 220px 130px at 0% 0%, rgba(120, 80, 30, 0.06), transparent 70%),
+    radial-gradient(ellipse 240px 160px at 100% 100%, rgba(120, 80, 30, 0.07), transparent 70%),
+    radial-gradient(ellipse 200px 110px at 100% 0%, rgba(120, 80, 30, 0.045), transparent 70%),
+    radial-gradient(ellipse 200px 110px at 0% 100%, rgba(120, 80, 30, 0.045), transparent 70%),
+    /* 中央のあたたかい光 */
+    radial-gradient(ellipse 85% 65% at 50% 48%, rgba(255, 253, 240, 0.5), transparent 70%),
+    /* 縦方向のごく淡い色むら */
+    linear-gradient(to bottom,
+      rgba(180, 130, 60, 0.025) 0%,
+      transparent 20%,
+      transparent 80%,
+      rgba(120, 80, 30, 0.035) 100%
+    ),
+    /* 繊維＋粒のSVGノイズ */
     url('/paper.svg');
-  background-size: auto, auto, auto, 240px;
+  background-size:
+    auto, auto, auto, auto, auto, auto, auto, auto,
+    auto, auto, auto, auto,
+    auto,
+    auto,
+    360px;
   border-radius: 6px;
   box-shadow:
-    0 8px 22px rgba(60, 40, 20, 0.16),
-    inset 0 0 0 1px rgba(60, 40, 20, 0.06);
+    0 10px 26px rgba(60, 40, 20, 0.20),
+    0 2px 6px rgba(60, 40, 20, 0.10),
+    inset 0 0 0 1px rgba(60, 40, 20, 0.08),
+    inset 0 0 36px rgba(120, 80, 30, 0.06);
   overflow: hidden;
 }
 /* めくり感: 表示中の側にノドの影（box-shadow insetで実装。::afterはめくりアニメ用に温存） */
@@ -1208,9 +1329,13 @@ textarea {
     to bottom,
     transparent 0,
     transparent 29px,
-    rgba(60, 40, 20, 0.07) 30px
+    rgba(60, 40, 20, 0.085) 30px,
+    rgba(60, 40, 20, 0.085) 30.5px,
+    transparent 31px
   );
-  opacity: 0.6;
+  opacity: 0.55;
+  /* 罫線にもごく薄いブラーをかけて手描き感 */
+  filter: blur(0.18px);
 }
 /* 赤い余白線（左ページのみ） */
 .paper-left::after {
@@ -1609,6 +1734,10 @@ textarea {
   position: relative;
   z-index: 2;
   transition: box-shadow 0.18s;
+  /* ごく薄いインク滲み */
+  text-shadow:
+    0 0 0.4px rgba(60, 40, 20, 0.45),
+    0 0.2px 0.3px rgba(60, 40, 20, 0.25);
 }
 .oneline.over {
   box-shadow: inset 0 -2px 0 rgba(200, 40, 40, 0.55);
@@ -1621,19 +1750,25 @@ textarea {
 }
 .char-counter {
   align-self: flex-end;
-  margin: 4px 4px 0 0;
-  font-family: var(--f-num);
+  margin: 4px 6px 0 0;
+  font-family: var(--f-stick);
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  opacity: 0.45;
+  letter-spacing: 0.08em;
+  opacity: 0.42;
   position: relative;
   z-index: 2;
+  transition: color 0.15s, opacity 0.15s;
+}
+.char-counter.exact {
+  opacity: 0.85;
+  color: #7a6428;
 }
 .char-counter.over {
   opacity: 1;
   color: #c83232;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
 }
 
 /* スタンプ（右ページ右下） */
