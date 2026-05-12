@@ -118,9 +118,9 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
 
       {atPageLimit ? (
         <p className="quiet-limit">
-          このノートは{MAX_PAGES_PER_NOTEBOOK}ページまで。
+          このノートは {MAX_PAGES_PER_NOTEBOOK}ページで いっぱい。
           <br />
-          <small>これ以上 のこすには、新しい本を 開いてください。</small>
+          <small>つづきは、もう一冊 ひらいて。</small>
         </p>
       ) : (
         <button className="add-today" onClick={addPage}>

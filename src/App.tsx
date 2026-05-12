@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { AppData } from './types';
 import { loadData, saveData } from './storage';
 import { loadLock } from './auth';
+import { applyWriteFont } from './writeFont';
 import Shelf from './components/Shelf';
 import NotebookView from './components/NotebookView';
 import PageEditor from './components/PageEditor';
@@ -32,6 +33,10 @@ export default function App() {
   useEffect(() => {
     saveData(data);
   }, [data]);
+
+  useEffect(() => {
+    applyWriteFont();
+  }, []);
 
   if (!unlocked) {
     return <LockScreen onUnlock={() => setUnlocked(true)} />;

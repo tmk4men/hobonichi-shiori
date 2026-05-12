@@ -1,7 +1,7 @@
 export type CoverTheme = 'beige' | 'navy' | 'rose' | 'sage' | 'mocha' | 'ink';
 export type CalendarMode = 'wareki' | 'seireki';
 export type Tag = 'meal' | 'outing' | 'happy' | 'play' | 'daily';
-export type Stamp = 'moon' | 'sun' | 'rain' | 'ramen' | 'bubble' | 'sakura' | 'wave' | 'night';
+export type Stamp = 'sun' | 'moon' | 'rain' | 'happy' | 'sleep' | 'tea';
 export type PhotoFrame = 'plain' | 'polaroid' | 'masking' | 'film' | 'notebook';
 
 export interface Page {
@@ -50,15 +50,13 @@ export const TAG_DEF: { key: Tag; emoji: string; label: string; bg: string; ink:
   { key: 'daily', emoji: '☁️', label: 'にちじょう', bg: '#d8d5cd', ink: '#4a4a48' },
 ];
 
-export const STAMP_DEF: { key: Stamp; label: string }[] = [
-  { key: 'moon', label: '🌙' },
-  { key: 'sun', label: '☀️' },
-  { key: 'rain', label: '🌧️' },
-  { key: 'ramen', label: '🍜' },
-  { key: 'bubble', label: '🫧' },
-  { key: 'sakura', label: '🌸' },
-  { key: 'wave', label: '🌊' },
-  { key: 'night', label: '🌃' },
+export const STAMP_DEF: { key: Stamp; label: string; meaning: string }[] = [
+  { key: 'sun', label: '☀️', meaning: 'はれ' },
+  { key: 'moon', label: '🌙', meaning: 'よる' },
+  { key: 'rain', label: '🌧️', meaning: 'あめ' },
+  { key: 'happy', label: '😊', meaning: 'にこ' },
+  { key: 'sleep', label: '😴', meaning: 'ねむ' },
+  { key: 'tea', label: '🍵', meaning: 'ほっと' },
 ];
 
 export const FRAME_DEF: { key: PhotoFrame; label: string }[] = [

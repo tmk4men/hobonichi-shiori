@@ -2,18 +2,24 @@ import { useState } from 'react';
 import { COVER_THEMES, FRAME_DEF, STAMP_DEF, TAG_DEF } from '../types';
 import type { IconChoice } from '../iconChoice';
 import { iconUrl, loadIconChoice, saveIconChoice } from '../iconChoice';
+import type { WriteFont } from '../writeFont';
+import { WRITE_FONT_DEF, applyWriteFont, loadWriteFont, saveWriteFont } from '../writeFont';
 import Emoji from './Emoji';
 
 export default function MaterialsView() {
   const [icon, setIcon] = useState<IconChoice>(loadIconChoice());
+  const [writeFont, setWriteFont] = useState<WriteFont>(loadWriteFont());
   const pickIcon = (c: IconChoice) => {
     setIcon(c);
     saveIconChoice(c);
   };
+  const pickWriteFont = (f: WriteFont) => {
+    setWriteFont(f);
+    saveWriteFont(f);
+    applyWriteFont(f);
+  };
   return (
     <div className="materials">
-      <p className="shelf-hint">ノートで 使える もの。</p>
-
       <section className="material-section">
         <h2 className="material-h">タグ（付箋）</h2>
         <p className="material-sub">1ページに 1つだけ。左上に そっと貼る。</p>
@@ -33,11 +39,12 @@ export default function MaterialsView() {
 
       <section className="material-section">
         <h2 className="material-h">スタンプ</h2>
-        <p className="material-sub">きょうの 空気を ひとつ。説明は しない。</p>
+        <p className="material-sub">きょうの 空気を ひとつだけ。</p>
         <div className="material-stamps">
           {STAMP_DEF.map((s) => (
             <span key={s.key} className="material-stamp">
               <Emoji char={s.label} size={32} />
+              <span className="material-stamp-meaning">{s.meaning}</span>
             </span>
           ))}
         </div>
@@ -70,6 +77,25 @@ export default function MaterialsView() {
             >
               <span>{c.label}</span>
             </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="material-section">
+        <h2 className="material-h">本文の 書体</h2>
+        <p className="material-sub">ノートで 書くときの ペンを 選ぶ。</p>
+        <div className="material-fonts">
+          {WRITE_FONT_DEF.map((f) => (
+            <button
+              key={f.key}
+              className={`material-font${writeFont === f.key ? ' on' : ''}`}
+              onClick={() => pickWriteFont(f.key)}
+            >
+              <span className="material-font-name">{f.label}</span>
+              <span className="material-font-sample" style={{ fontFamily: f.cssFamily }}>
+                {f.sample}
+              </span>
+            </button>
           ))}
         </div>
       </section>

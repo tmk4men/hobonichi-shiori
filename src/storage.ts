@@ -68,7 +68,22 @@ function migrate(raw: { version?: number; notebooks?: unknown[]; pages?: unknown
       date: p.date,
       text: p.text ?? '',
       tag,
-      stamp: stamp && ['moon', 'sun', 'rain', 'ramen', 'bubble', 'sakura', 'wave', 'night'].includes(stamp) ? (stamp as Page['stamp']) : undefined,
+      stamp: (() => {
+        if (!stamp) return undefined;
+        // 新6種ならそのまま
+        if (['sun', 'moon', 'rain', 'happy', 'sleep', 'tea'].includes(stamp)) {
+          return stamp as Page['stamp'];
+        }
+        // 旧スタンプを近い意味にマップ
+        const legacyStampMap: Record<string, Page['stamp']> = {
+          ramen: 'tea',
+          bubble: 'happy',
+          sakura: 'happy',
+          wave: 'sun',
+          night: 'moon',
+        };
+        return legacyStampMap[stamp];
+      })(),
       photo: p.photo,
       frame: (['plain', 'polaroid', 'masking', 'film', 'notebook'].includes(p.frame ?? '')
         ? (p.frame as Page['frame'])

@@ -17,6 +17,9 @@
   --f-stick: 'Yomogi', 'Klee One', 'Hiragino Maru Gothic ProN', cursive;
   --f-num: 'Caveat', 'Klee One', cursive;
 }
+body[data-write-font='kurenaido'] {
+  --f-write: 'Zen Kurenaido', 'Yusei Magic', 'Klee One', cursive;
+}
 * {
   box-sizing: border-box;
 }
@@ -2148,16 +2151,26 @@ textarea {
 .material-stamps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: 14px 10px;
 }
 .material-stamp {
-  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.material-stamp .emoji,
+.material-stamp > img.emoji {
   background: rgba(255, 255, 255, 0.55);
   border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  padding: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+.material-stamp-meaning {
+  font-family: var(--f-hand);
+  font-size: 11px;
+  opacity: 0.7;
+  letter-spacing: 0.06em;
 }
 .material-frames {
   display: grid;
@@ -2220,6 +2233,42 @@ textarea {
 .material-date.seireki { font-family: var(--f-num); font-weight: 700; font-size: 22px; }
 .material-date.wareki { font-family: var(--f-pen); }
 .material-date small { font-size: 12px; opacity: 0.55; margin-left: 4px; }
+
+.material-fonts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.material-font {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 2px solid transparent;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.material-font.on {
+  border-color: var(--ink);
+  background: rgba(255, 255, 255, 0.78);
+}
+.material-font-name {
+  font-family: var(--f-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  flex: 0 0 auto;
+}
+.material-font-sample {
+  flex: 1;
+  text-align: right;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
+}
 
 .material-icons {
   display: grid;
@@ -2292,13 +2341,16 @@ textarea {
   opacity: 0.65;
 }
 
-/* --- 共有用キャプチャ（画面外）"印刷物"フレーム --- */
+/* --- 共有用キャプチャ（不可視）"印刷物"フレーム --- */
 .capture-frame {
   position: fixed;
-  top: -10000px;
-  left: -10000px;
+  top: 0;
+  left: 0;
   width: 1280px;
   height: 960px;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: -1;
   padding: 64px 64px 84px;
   background: #efe7d0;
   background-image:

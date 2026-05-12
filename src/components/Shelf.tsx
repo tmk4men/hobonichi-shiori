@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { AppData, CoverTheme, Notebook } from '../types';
 import { COVER_THEMES, STAMP_BY_KEY, TAG_BY_KEY } from '../types';
 import {
@@ -30,6 +30,24 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
   const [title, setTitle] = useState('');
   const [cover, setCover] = useState<CoverTheme>('beige');
   const atLimit = data.notebooks.length >= MAX_NOTEBOOKS_FREE;
+
+  // 左右スワイプでタブ切替
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touch.current) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touch.current.x;
+    const dy = t.clientY - touch.current.y;
+    touch.current = null;
+    if (Math.abs(dx) < 80 || Math.abs(dy) > Math.abs(dx)) return;
+    // 右へスワイプ → 左のタブ（shelf）／ 左へスワイプ → 右のタブ（materials）
+    if (dx < 0 && tab === 'shelf') setTab('materials');
+    if (dx > 0 && tab === 'materials') setTab('shelf');
+  };
 
   const bookmark = useMemo(() => {
     const cards = buildHighlights(data);
@@ -66,7 +84,7 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
   if (rows.length === 0) rows.push([]);
 
   return (
-    <div className="shelf">
+    <div className="shelf" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <header className="appbar">
         <span style={{ width: 36 }} />
         <h1>ひびのしおり</h1>
@@ -100,9 +118,9 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
 
       {tab === 'shelf' && atLimit && (
         <p className="quiet-limit">
-          いまは {MAX_NOTEBOOKS_FREE}冊まで。
+          ここまでが、{MAX_NOTEBOOKS_FREE}冊ぶん。
           <br />
-          <small>これ以上 つくるには、買い切りで 解放されます。</small>
+          <small>もうひとつ 本棚を ひろげると、つづきが 書けます。</small>
         </p>
       )}
 

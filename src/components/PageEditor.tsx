@@ -177,20 +177,43 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const shareSpread = async () => {
     if (!captureRef.current) return;
     setSharing(true);
+    const node = captureRef.current;
+    // html2canvasがレイアウト計算できるよう、一時的に可視化
+    const prevVisibility = node.style.visibility;
+    const prevZ = node.style.zIndex;
+    node.style.visibility = 'visible';
+    node.style.zIndex = '-1';
     try {
-      // ensure fonts are loaded
       const docFonts = (document as Document & { fonts?: { ready?: Promise<unknown> } }).fonts;
       if (docFonts?.ready) await docFonts.ready;
-      const canvas = await html2canvas(captureRef.current, {
+      // 写真がある場合、img の読み込み完了を待つ
+      const imgs = Array.from(node.querySelectorAll('img'));
+      await Promise.all(
+        imgs.map((img) => {
+          if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+          return new Promise<void>((res) => {
+            const done = () => res();
+            img.addEventListener('load', done, { once: true });
+            img.addEventListener('error', done, { once: true });
+          });
+        }),
+      );
+
+      const canvas = await html2canvas(node, {
         backgroundColor: '#fffaea',
         scale: 2,
         useCORS: true,
+        allowTaint: true,
         logging: false,
+        width: 1280,
+        height: 960,
+        windowWidth: 1280,
+        windowHeight: 960,
       });
       const blob: Blob | null = await new Promise((res) =>
         canvas.toBlob((b) => res(b), 'image/png', 0.95),
       );
-      if (!blob) throw new Error('blob is null');
+      if (!blob) throw new Error('blobの生成に失敗');
       const file = new File([blob], `${page.date}.png`, { type: 'image/png' });
       const navAny = navigator as Navigator & { canShare?: (d: { files: File[] }) => boolean };
       if (navAny.canShare?.({ files: [file] })) {
@@ -201,7 +224,6 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           if ((e as Error).name === 'AbortError') return;
         }
       }
-      // fallback: download
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -211,9 +233,12 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error(err);
-      alert('画像にできませんでした。');
+      console.error('shareSpread error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      alert(`画像にできませんでした。\n${msg}`);
     } finally {
+      node.style.visibility = prevVisibility;
+      node.style.zIndex = prevZ;
       setSharing(false);
     }
   };
