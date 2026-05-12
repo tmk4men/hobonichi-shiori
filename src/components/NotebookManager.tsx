@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { AppData, CoverTheme, Notebook } from '../types';
 import { COVER_THEMES } from '../types';
+import ConfirmDialog from './ConfirmDialog';
 
 interface Props {
   data: AppData;
@@ -11,6 +12,7 @@ interface Props {
 export default function NotebookManager({ data, onBack, onChange }: Props) {
   const [editing, setEditing] = useState<string | null>(null);
   const [titleDraft, setTitleDraft] = useState('');
+  const [removeTarget, setRemoveTarget] = useState<Notebook | null>(null);
 
   const updateNotebook = (id: string, patch: Partial<Notebook>) => {
     onChange({
@@ -19,16 +21,13 @@ export default function NotebookManager({ data, onBack, onChange }: Props) {
     });
   };
 
-  const removeNotebook = (id: string) => {
+  const confirmRemove = (id: string) => {
     const target = data.notebooks.find((n) => n.id === id);
     if (!target) return;
-    const count = data.pages.filter((p) => p.notebookId === id).length;
-    if (
-      !confirm(
-        `「${target.title}」と、その中の ${count} ページを すべて削除します。よろしいですか？`,
-      )
-    )
-      return;
+    setRemoveTarget(target);
+  };
+
+  const doRemove = (id: string) => {
     onChange({
       ...data,
       notebooks: data.notebooks.filter((n) => n.id !== id),
@@ -108,7 +107,7 @@ export default function NotebookManager({ data, onBack, onChange }: Props) {
                 </div>
 
                 <div className="manager-actions">
-                  <button className="link danger" onClick={() => removeNotebook(nb.id)}>
+                  <button className="link danger" onClick={() => confirmRemove(nb.id)}>
                     このノートを 削除
                   </button>
                 </div>
@@ -116,6 +115,22 @@ export default function NotebookManager({ data, onBack, onChange }: Props) {
             );
           })}
         </ul>
+      )}
+
+      {removeTarget && (
+        <ConfirmDialog
+          title="このノートを 削除しますか？"
+          message={`「${removeTarget.title}」と、なかに ある\n${data.pages.filter((p) => p.notebookId === removeTarget.id).length} ページが 消えます。`}
+          confirmLabel="削除する"
+          cancelLabel="やめる"
+          danger
+          onConfirm={() => {
+            const id = removeTarget.id;
+            setRemoveTarget(null);
+            doRemove(id);
+          }}
+          onCancel={() => setRemoveTarget(null)}
+        />
       )}
     </div>
   );

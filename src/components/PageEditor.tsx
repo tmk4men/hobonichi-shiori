@@ -12,7 +12,10 @@ import {
   weekdayJP,
 } from '../storage';
 import Emoji from './Emoji';
+import ConfirmDialog from './ConfirmDialog';
 import { playPageFlip, playStamp, playWrite, unlockAudio } from '../sfx';
+import type { WriteFont } from '../writeFont';
+import { WRITE_FONT_DEF, applyWriteFont, isFreeFont, loadWriteFont, saveWriteFont } from '../writeFont';
 
 interface Props {
   data: AppData;
@@ -57,6 +60,17 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const [showTagPick, setShowTagPick] = useState(false);
   const [showStampPick, setShowStampPick] = useState(false);
   const [showFramePick, setShowFramePick] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [showPageMenu, setShowPageMenu] = useState(false);
+  const [showFontPick, setShowFontPick] = useState(false);
+  const [writeFont, setWriteFontState] = useState<WriteFont>(loadWriteFont());
+
+  const pickFont = (f: WriteFont) => {
+    if (!isFreeFont(f)) return; // ロック中は選べない
+    saveWriteFont(f);
+    applyWriteFont(f);
+    setWriteFontState(f);
+  };
 
   // ピッカーを開く前にフォーカスを外してキーボードを閉じる
   // （キーボードが開いていると dvh が小さくなりシートの下端が見切れる）
@@ -196,7 +210,6 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   };
 
   const removePage = () => {
-    if (!confirm('このページを 削除します。よろしいですか？')) return;
     onChange({ ...data, pages: data.pages.filter((p) => p.id !== pageId) });
     onBack();
   };
@@ -381,6 +394,20 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           >
             ★
           </button>
+          <button
+            className="icon-btn more-btn"
+            onClick={() => {
+              const el = document.activeElement;
+              if (el instanceof HTMLElement) el.blur();
+              setShowPageMenu(true);
+            }}
+            aria-label="メニュー"
+            title="メニュー"
+          >
+            <span className="more-dot" />
+            <span className="more-dot" />
+            <span className="more-dot" />
+          </button>
         </span>
       </header>
 
@@ -518,7 +545,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             しゃしんを 外す
           </button>
         )}
-        <button className="link danger" onClick={removePage}>
+        <button className="link danger" onClick={() => setConfirmRemove(true)}>
           このページを削除
         </button>
       </div>
@@ -642,6 +669,91 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             </div>
           </div>
         </div>
+      )}
+
+      {showPageMenu && (
+        <div className="sheet-bg" onClick={() => setShowPageMenu(false)}>
+          <div className="sheet page-menu-sheet" onClick={(e) => e.stopPropagation()}>
+            <h3>このページ</h3>
+            <div className="page-menu-list">
+              <button
+                className="page-menu-row"
+                onClick={() => {
+                  setShowPageMenu(false);
+                  setShowFontPick(true);
+                }}
+              >
+                <span className="pm-label">書きごこちの フォント</span>
+                <span className="pm-value">
+                  {WRITE_FONT_DEF.find((f) => f.key === writeFont)?.label ?? ''} ›
+                </span>
+              </button>
+              <button
+                className="page-menu-row"
+                onClick={() => {
+                  setShowPageMenu(false);
+                  shareSpread();
+                }}
+                disabled={sharing}
+              >
+                <span className="pm-label">画像で 共有</span>
+                <span className="pm-value">›</span>
+              </button>
+              <button
+                className="page-menu-row danger"
+                onClick={() => {
+                  setShowPageMenu(false);
+                  setConfirmRemove(true);
+                }}
+              >
+                <span className="pm-label">このページを 削除</span>
+                <span className="pm-value">›</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFontPick && (
+        <div className="sheet-bg" onClick={() => setShowFontPick(false)}>
+          <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <h3>書きごこちの フォント</h3>
+            <div className="font-pick">
+              {WRITE_FONT_DEF.map((f) => (
+                <button
+                  key={f.key}
+                  className={`font-opt${writeFont === f.key ? ' on' : ''}${f.locked ? ' locked' : ''}`}
+                  onClick={() => pickFont(f.key)}
+                  disabled={f.locked}
+                  style={{ fontFamily: f.cssFamily }}
+                >
+                  <span className="font-name">
+                    {f.label}
+                    {f.locked && <small className="locked-mark">　🔒</small>}
+                  </span>
+                  <span className="font-sample" style={{ fontFamily: f.cssFamily }}>
+                    {f.sample}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmRemove && (
+        <ConfirmDialog
+          title="このページを 削除しますか？"
+          message={'書いた ことばや しゃしんは\nもう 見られなく なります。'}
+          confirmLabel="削除する"
+          cancelLabel="やめる"
+          danger
+          onConfirm={() => {
+            setConfirmRemove(false);
+            removePage();
+          }}
+          onCancel={() => setConfirmRemove(false)}
+        />
       )}
     </div>
   );

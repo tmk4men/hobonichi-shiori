@@ -116,14 +116,6 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
 
       {tab === 'materials' && <MaterialsView />}
 
-      {tab === 'shelf' && atLimit && (
-        <p className="quiet-limit">
-          ここまでが、{MAX_NOTEBOOKS_FREE}冊ぶん。
-          <br />
-          <small>もうひとつ 本棚を ひろげると、つづきが 書けます。</small>
-        </p>
-      )}
-
       {tab === 'shelf' && bookmark && (() => {
         const p = bookmark.page;
         const tagInfo = p.tag ? TAG_BY_KEY[p.tag] : undefined;
@@ -213,6 +205,16 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
                       <span className="plus">＋</span>
                       <span className="spine-newlabel">あたらしく</span>
                     </button>
+                  )}
+                  {ri === rows.length - 1 && atLimit && (
+                    <div className="spine spine-locked" aria-label="ノートの上限に達しました">
+                      <span className="lock-mark">🔒</span>
+                      <span className="spine-newlabel">
+                        いまは
+                        <br />
+                        {MAX_NOTEBOOKS_FREE}冊まで
+                      </span>
+                    </div>
                   )}
                 </div>
                 <div className="shelf-plank" />

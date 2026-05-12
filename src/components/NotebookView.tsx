@@ -11,6 +11,7 @@ import {
   weekdayJP,
 } from '../storage';
 import Emoji from './Emoji';
+import ConfirmDialog from './ConfirmDialog';
 
 const MAX_PAGES_PER_NOTEBOOK = 45;
 
@@ -28,6 +29,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(nb?.title ?? '');
   const [showSettings, setShowSettings] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   if (!nb) {
     return (
@@ -83,7 +85,6 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
   };
 
   const removeNotebook = () => {
-    if (!confirm('このノートと中のページを すべて 削除します。よろしいですか？')) return;
     onChange({
       ...data,
       notebooks: data.notebooks.filter((x) => x.id !== nb.id),
@@ -176,6 +177,21 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
         </ul>
       )}
 
+      {confirmRemove && (
+        <ConfirmDialog
+          title="このノートを 削除しますか？"
+          message={`「${nb.title}」と、なかに ある\nすべての ページが 消えます。`}
+          confirmLabel="削除する"
+          cancelLabel="やめる"
+          danger
+          onConfirm={() => {
+            setConfirmRemove(false);
+            removeNotebook();
+          }}
+          onCancel={() => setConfirmRemove(false)}
+        />
+      )}
+
       {showSettings && (
         <div className="sheet-bg" onClick={() => setShowSettings(false)}>
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
@@ -198,7 +214,13 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
               </div>
             </div>
             <div className="modal-actions">
-              <button className="link danger" onClick={removeNotebook}>
+              <button
+                className="link danger"
+                onClick={() => {
+                  setShowSettings(false);
+                  setConfirmRemove(true);
+                }}
+              >
                 このノートを削除
               </button>
               <button className="ghost" onClick={() => setShowSettings(false)}>
