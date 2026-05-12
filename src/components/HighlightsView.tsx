@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { AppData, Page } from '../types';
 import { COVER_THEMES, STAMP_BY_KEY, TAG_BY_KEY } from '../types';
 import { findNotebook, formatDate, weekdayJP } from '../storage';
+import Emoji from './Emoji';
 
 interface Props {
   data: AppData;
@@ -64,13 +65,17 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
         <div className="card-top">
           {tag && (
             <span className="row-tag" style={{ background: tag.bg, color: tag.ink }}>
-              {tag.emoji}
+              <Emoji char={tag.emoji} size={18} />
             </span>
           )}
           <span className={`card-date ${nb?.calendarMode ?? 'seireki'}`}>
             {nb ? formatDate(p.date, nb.calendarMode) : p.date}（{weekdayJP(p.date)}）
           </span>
-          {stamp && <span className="card-stamp">{stamp.label}</span>}
+          {stamp && (
+            <span className="card-stamp">
+              <Emoji char={stamp.label} size={20} />
+            </span>
+          )}
         </div>
         {p.photo && (
           <div className="card-photo">

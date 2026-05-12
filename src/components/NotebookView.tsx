@@ -10,6 +10,7 @@ import {
   todayStr,
   weekdayJP,
 } from '../storage';
+import Emoji from './Emoji';
 
 interface Props {
   data: AppData;
@@ -132,7 +133,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
                   <span className="row-left">
                     {t && (
                       <span className="row-tag" style={{ background: t.bg, color: t.ink }}>
-                        {t.emoji}
+                        <Emoji char={t.emoji} size={18} />
                       </span>
                     )}
                   </span>
@@ -147,7 +148,11 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
                     </span>
                   </span>
                   <span className="row-right">
-                    {s && <span className="row-stamp">{s.label}</span>}
+                    {s && (
+                      <span className="row-stamp">
+                        <Emoji char={s.label} size={24} />
+                      </span>
+                    )}
                   </span>
                 </button>
               </li>

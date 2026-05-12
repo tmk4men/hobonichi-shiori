@@ -1252,4 +1252,22 @@ textarea {
   position: relative;
 }
 
-/* photo-wrap legacy: not used now */
+/* Twemoji SVG */
+.emoji {
+  display: inline-block;
+  vertical-align: -0.15em;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.sticky-tag .emoji { vertical-align: -0.18em; margin-right: 2px; }
+.tag-opt .emoji { vertical-align: -0.2em; margin-right: 4px; }
+.row-tag .emoji { vertical-align: middle; }
+.row-stamp .emoji,
+.card-stamp .emoji,
+.stamp-slot .emoji,
+.stamp-opt .emoji { vertical-align: middle; }
+.stamp-opt { padding: 0; line-height: 0; }
+.stamp-slot .emoji {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+}

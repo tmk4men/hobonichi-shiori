@@ -9,6 +9,7 @@ import {
   sortPagesByDate,
   weekdayJP,
 } from '../storage';
+import Emoji from './Emoji';
 
 interface Props {
   data: AppData;
@@ -199,7 +200,13 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           onClick={() => setShowTagPick(true)}
           aria-label="タグ"
         >
-          {tagInfo ? `${tagInfo.emoji} ${tagInfo.label}` : '＋ タグ'}
+          {tagInfo ? (
+            <>
+              <Emoji char={tagInfo.emoji} size={18} /> {tagInfo.label}
+            </>
+          ) : (
+            '＋ タグ'
+          )}
         </button>
 
         {/* 日付 */}
@@ -262,7 +269,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           onClick={() => setShowStampPick(true)}
           aria-label="きょうのスタンプ"
         >
-          {stampInfo ? stampInfo.label : '＋'}
+          {stampInfo ? <Emoji char={stampInfo.label} size={36} /> : '＋'}
         </button>
       </div>
 
@@ -289,7 +296,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
                   style={{ background: t.bg, color: t.ink }}
                   onClick={() => setTag(t.key)}
                 >
-                  {t.emoji} {t.label}
+                  <Emoji char={t.emoji} size={20} /> {t.label}
                 </button>
               ))}
               {page.tag && (
@@ -313,7 +320,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
                   className={`stamp-opt${page.stamp === s.key ? ' on' : ''}`}
                   onClick={() => setStamp(s.key)}
                 >
-                  {s.label}
+                  <Emoji char={s.label} size={34} />
                 </button>
               ))}
               {page.stamp && (
