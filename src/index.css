@@ -1,0 +1,6 @@
+/* base reset only — actual styling is in App.css */
+html,
+body,
+#root {
+  height: 100%;
+}
