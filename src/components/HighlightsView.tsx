@@ -67,7 +67,7 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
               {tag.emoji}
             </span>
           )}
-          <span className="card-date">
+          <span className={`card-date ${nb?.calendarMode ?? 'seireki'}`}>
             {nb ? formatDate(p.date, nb.calendarMode) : p.date}（{weekdayJP(p.date)}）
           </span>
           {stamp && <span className="card-stamp">{stamp.label}</span>}

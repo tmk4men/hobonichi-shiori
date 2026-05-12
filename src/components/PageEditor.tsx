@@ -203,7 +203,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
         </button>
 
         {/* 日付 */}
-        <div className="page-date">
+        <div className={`page-date ${nb.calendarMode}`}>
           {formatDate(page.date, nb.calendarMode)}
           <small>（{weekdayJP(page.date)}）</small>
         </div>

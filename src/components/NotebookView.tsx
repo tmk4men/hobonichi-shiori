@@ -137,7 +137,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
                     )}
                   </span>
                   <span className="row-center">
-                    <span className="date">
+                    <span className={`date ${nb.calendarMode}`}>
                       {formatDate(p.date, nb.calendarMode)}
                       <small>（{weekdayJP(p.date)}）</small>
                     </span>

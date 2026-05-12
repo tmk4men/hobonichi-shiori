@@ -6,14 +6,22 @@
   --ink-soft: #6b5a45;
   --rule: rgba(60, 40, 20, 0.16);
   --rule-soft: rgba(60, 40, 20, 0.08);
+
+  /* font system */
+  --f-display: 'Shippori Mincho B1', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  --f-body: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+    'BIZ UDPGothic', system-ui, sans-serif;
+  --f-hand: 'Klee One', 'Hiragino Maru Gothic ProN', cursive;
+  --f-stick: 'Yomogi', 'Klee One', 'Hiragino Maru Gothic ProN', cursive;
+  --f-num: 'Caveat', 'Klee One', cursive;
 }
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
-  font-family: 'Klee One', 'Hiragino Maru Gothic ProN', 'Hiragino Kaku Gothic ProN',
-    'BIZ UDPGothic', 'Yu Gothic', system-ui, sans-serif;
+  font-family: var(--f-body);
+  font-weight: 400;
   background: #c8baa0;
   background-image:
     radial-gradient(ellipse at top, rgba(255, 245, 215, 0.45), transparent 60%),
@@ -95,13 +103,13 @@ textarea {
   border-bottom: 1px dashed var(--rule);
 }
 .appbar h1 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   margin: 0;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.18em;
   text-align: center;
   flex: 1;
-  font-family: 'Klee One', serif;
+  font-family: var(--f-display);
 }
 .appbar h1 small {
   font-weight: 400;
@@ -117,7 +125,7 @@ textarea {
   white-space: nowrap;
   opacity: 0.78;
   letter-spacing: 0.04em;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
 }
 .link:hover {
   background: rgba(0, 0, 0, 0.05);
@@ -168,7 +176,7 @@ textarea {
   border-radius: 8px;
   font-weight: 600;
   letter-spacing: 0.06em;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
 }
 .ghost {
   padding: 11px 20px;
@@ -176,7 +184,7 @@ textarea {
   border: 1px solid rgba(0, 0, 0, 0.2);
   background: transparent;
   font-weight: 500;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
 }
 .ghost.small {
   padding: 6px 12px;
@@ -196,7 +204,7 @@ textarea {
   font-size: 13px;
   opacity: 0.55;
   letter-spacing: 0.16em;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
 }
 
 .bookshelf {
@@ -272,12 +280,12 @@ textarea {
   writing-mode: vertical-rl;
   text-orientation: upright;
   font-size: 13px;
-  letter-spacing: 0.22em;
-  font-weight: 500;
-  line-height: 1.2;
+  letter-spacing: 0.28em;
+  font-weight: 600;
+  line-height: 1.25;
   max-height: 170px;
   overflow: hidden;
-  font-family: 'Klee One', serif;
+  font-family: var(--f-display);
 }
 .spine-new {
   background: rgba(0,0,0,0.04);
@@ -383,11 +391,11 @@ textarea {
 .modal h2,
 .sheet h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   text-align: center;
-  letter-spacing: 0.16em;
-  font-family: 'Klee One', serif;
+  letter-spacing: 0.22em;
+  font-family: var(--f-display);
   position: relative;
 }
 .modal h2::after,
@@ -410,7 +418,7 @@ textarea {
 }
 .field span:first-child {
   letter-spacing: 0.08em;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
 }
 .field input[type='text'] {
   border: none;
@@ -419,7 +427,7 @@ textarea {
   font-size: 15px;
   background: transparent;
   outline: none;
-  font-family: 'Klee One', serif;
+  font-family: var(--f-hand);
 }
 .field input[type='text']:focus {
   border-bottom-style: solid;
@@ -433,11 +441,12 @@ textarea {
 .cover-swatch {
   padding: 14px 6px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   opacity: 0.7;
   border: 2px solid transparent;
-  font-family: 'Klee One', sans-serif;
-  letter-spacing: 0.06em;
+  font-family: var(--f-display);
+  font-weight: 600;
+  letter-spacing: 0.12em;
 }
 .cover-swatch.on {
   opacity: 1;
@@ -461,7 +470,7 @@ textarea {
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.05);
   font-size: 13px;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
   letter-spacing: 0.04em;
 }
 .seg-btn.on {
@@ -486,7 +495,7 @@ textarea {
     1px 2px 3px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(0, 0, 0, 0.04);
   letter-spacing: 0.04em;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
   position: relative;
 }
 .tag-opt::after {
@@ -545,7 +554,7 @@ textarea {
   border-radius: 8px;
   background: transparent;
   border: 1px dashed rgba(163, 70, 60, 0.5);
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
 }
 
 .frame-pick {
@@ -562,7 +571,7 @@ textarea {
   padding: 10px 6px;
   border-radius: 8px;
   border: 2px solid transparent;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
   letter-spacing: 0.06em;
 }
 .frame-opt.on {
@@ -599,12 +608,13 @@ textarea {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.6);
   color: inherit;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-weight: 400;
+  letter-spacing: 0.14em;
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.1),
     inset 0 0 0 1px rgba(0, 0, 0, 0.04);
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-stick);
+  font-size: 15px;
 }
 .add-today:hover {
   background: rgba(255, 255, 255, 0.78);
@@ -615,11 +625,12 @@ textarea {
   background: transparent;
   border: none;
   border-bottom: 1px dashed rgba(0, 0, 0, 0.32);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   padding: 4px 0;
   outline: none;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-display);
+  letter-spacing: 0.1em;
 }
 
 .page-list {
@@ -676,9 +687,15 @@ textarea {
 }
 .row-center .date {
   font-weight: 600;
-  font-size: 13px;
-  font-family: 'Klee One', serif;
+  font-size: 14px;
+  font-family: var(--f-hand);
   letter-spacing: 0.04em;
+}
+.row-center .date.seireki {
+  font-family: var(--f-num);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.02em;
 }
 .row-center .date small {
   opacity: 0.55;
@@ -721,7 +738,7 @@ textarea {
   opacity: 0.65;
   letter-spacing: 0.1em;
   line-height: 1.9;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
   font-size: 14px;
 }
 .empty small {
@@ -773,9 +790,9 @@ textarea {
   position: absolute;
   top: -14px;
   left: 18px;
-  padding: 10px 14px 8px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 12px 14px 10px;
+  font-size: 14px;
+  font-weight: 400;
   border-radius: 2px;
   box-shadow:
     1px 3px 5px rgba(0, 0, 0, 0.22),
@@ -784,8 +801,8 @@ textarea {
   rotate: -3deg;
   background: #fff7d1;
   color: #6a5a30;
-  letter-spacing: 0.04em;
-  font-family: 'Klee One', sans-serif;
+  letter-spacing: 0.06em;
+  font-family: var(--f-stick);
   z-index: 3;
 }
 .sticky-tag::before {
@@ -828,18 +845,30 @@ textarea {
 .sticky-tag.empty::after { display: none; }
 
 .page-date {
-  font-size: 15px;
-  letter-spacing: 0.08em;
+  font-size: 17px;
+  letter-spacing: 0.1em;
   font-weight: 500;
-  font-family: 'Klee One', serif;
+  font-family: var(--f-hand);
   margin: 4px 0 22px;
-  padding: 0 12px 6px;
-  border-bottom: 1px dashed rgba(0, 0, 0, 0.18);
+  padding: 0 14px 6px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
   text-align: center;
+}
+.page-date.seireki {
+  font-family: var(--f-num);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.02em;
+}
+.page-date.seireki small {
+  font-family: var(--f-hand);
+  font-size: 12px;
+  font-weight: 400;
+  vertical-align: middle;
 }
 .page-date small {
   opacity: 0.55;
-  margin-left: 4px;
+  margin-left: 6px;
   font-size: 12px;
 }
 
@@ -870,7 +899,7 @@ textarea {
     rgba(60, 40, 20, 0.03) 10px,
     rgba(60, 40, 20, 0.03) 11px
   );
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-body);
 }
 .photo-add:hover { opacity: 1; }
 
@@ -1050,22 +1079,24 @@ textarea {
   background: transparent;
   outline: none;
   resize: none;
-  font-size: 15px;
-  line-height: 30px;
+  font-size: 16px;
+  line-height: 32px;
   color: inherit;
   background-image: repeating-linear-gradient(
     to bottom,
     transparent 0,
-    transparent 29px,
-    rgba(60, 40, 20, 0.18) 30px
+    transparent 31px,
+    rgba(60, 40, 20, 0.18) 32px
   );
   padding: 0 4px;
-  font-family: 'Klee One', serif;
-  letter-spacing: 0.03em;
+  font-family: var(--f-hand);
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 .oneline::placeholder {
-  opacity: 0.4;
-  font-style: italic;
+  opacity: 0.38;
+  font-family: var(--f-stick);
+  letter-spacing: 0.08em;
 }
 
 /* スタンプ（右下） */
@@ -1121,12 +1152,12 @@ textarea {
   padding: 8px 16px 24px;
 }
 .recall-h {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  margin: 22px 4px 14px;
-  opacity: 0.78;
-  font-family: 'Klee One', serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  margin: 24px 4px 14px;
+  opacity: 0.82;
+  font-family: var(--f-display);
   position: relative;
   padding-left: 12px;
 }
@@ -1185,7 +1216,14 @@ textarea {
   text-align: center;
   letter-spacing: 0.06em;
   opacity: 0.85;
-  font-family: 'Klee One', serif;
+  font-family: var(--f-hand);
+  font-size: 13px;
+}
+.card-date.seireki {
+  font-family: var(--f-num);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.02em;
 }
 .card-stamp { font-size: 18px; }
 .card-photo img {
@@ -1198,17 +1236,19 @@ textarea {
   position: relative;
 }
 .card-text {
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.85;
   min-height: 22px;
-  font-family: 'Klee One', serif;
+  font-family: var(--f-hand);
+  letter-spacing: 0.02em;
   position: relative;
 }
 .card-bottom {
   text-align: right;
   opacity: 0.55;
   font-size: 11px;
-  font-family: 'Klee One', sans-serif;
+  font-family: var(--f-display);
+  letter-spacing: 0.08em;
   position: relative;
 }
 
