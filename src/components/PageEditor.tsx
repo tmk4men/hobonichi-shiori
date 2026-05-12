@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import html2canvas from 'html2canvas';
 import type { AppData, Page, PhotoFrame, Stamp, Tag } from '../types';
 import { COVER_THEMES, FRAME_DEF, STAMP_DEF, TAG_BY_KEY, TAG_DEF } from '../types';
 import {
@@ -49,14 +50,18 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const page = findPage(data, pageId);
   const nb = page ? findNotebook(data, page.notebookId) : undefined;
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const captureRef = useRef<HTMLDivElement>(null);
+  const [sharing, setSharing] = useState(false);
   const [text, setText] = useState(page?.text ?? '');
   const [showTagPick, setShowTagPick] = useState(false);
   const [showStampPick, setShowStampPick] = useState(false);
   const [showFramePick, setShowFramePick] = useState(false);
   const [flipDir, setFlipDir] = useState<'none' | 'next' | 'prev'>('none');
+  const [side, setSide] = useState<'left' | 'right'>('left');
 
   useEffect(() => {
     setText(page?.text ?? '');
+    setSide('left');
     setShowTagPick(false);
     setShowStampPick(false);
     setShowFramePick(false);
@@ -66,6 +71,13 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
+
+  // sideが変わったらtext stateを切替先のページに合わせる
+  useEffect(() => {
+    if (!page) return;
+    setText(side === 'right' ? (page.textRight ?? '') : page.text);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [side]);
 
   if (!page || !nb) {
     return (
@@ -82,6 +94,10 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const prevPage = idx >= 0 && idx + 1 < pages.length ? pages[idx + 1] : null; // sorted desc
   const nextPage = idx > 0 ? pages[idx - 1] : null;
 
+  const isRight = side === 'right';
+  const currentPhoto = isRight ? page.photoRight : page.photo;
+  const currentFrame = (isRight ? page.frameRight : page.frame) ?? 'plain';
+
   const patch = (changes: Partial<Page>) => {
     onChange({
       ...data,
@@ -92,7 +108,11 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   };
 
   const commitText = () => {
-    if (text !== page.text) patch({ text });
+    if (isRight) {
+      if (text !== (page.textRight ?? '')) patch({ textRight: text });
+    } else {
+      if (text !== page.text) patch({ text });
+    }
   };
 
   const setTag = (t: Tag | undefined) => {
@@ -104,14 +124,16 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     setShowStampPick(false);
   };
   const setFrame = (f: PhotoFrame) => {
-    patch({ frame: f });
+    if (isRight) patch({ frameRight: f });
+    else patch({ frame: f });
     setShowFramePick(false);
   };
 
   const cycleFrame = (dir: 1 | -1) => {
-    const i = FRAME_DEF.findIndex((f) => f.key === page.frame);
+    const i = FRAME_DEF.findIndex((f) => f.key === currentFrame);
     const n = (i + dir + FRAME_DEF.length) % FRAME_DEF.length;
-    patch({ frame: FRAME_DEF[n].key });
+    if (isRight) patch({ frameRight: FRAME_DEF[n].key });
+    else patch({ frame: FRAME_DEF[n].key });
   };
 
   const onPickPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +144,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       if (dataUrl.length > MAX_PHOTO_BYTES) {
         dataUrl = await compressImage(file, 960, 0.7);
       }
-      patch({ photo: dataUrl });
+      if (isRight) patch({ photoRight: dataUrl });
+      else patch({ photo: dataUrl });
     } catch (err) {
       console.error(err);
       alert('しゃしんを 読み込めませんでした。');
@@ -131,7 +154,10 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     }
   };
 
-  const removePhoto = () => patch({ photo: undefined });
+  const removePhoto = () => {
+    if (isRight) patch({ photoRight: undefined });
+    else patch({ photo: undefined });
+  };
 
   const removePage = () => {
     if (!confirm('このページを 削除します。よろしいですか？')) return;
@@ -139,18 +165,89 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     onBack();
   };
 
+  const shareSpread = async () => {
+    if (!captureRef.current) return;
+    setSharing(true);
+    try {
+      // ensure fonts are loaded
+      const docFonts = (document as Document & { fonts?: { ready?: Promise<unknown> } }).fonts;
+      if (docFonts?.ready) await docFonts.ready;
+      const canvas = await html2canvas(captureRef.current, {
+        backgroundColor: '#fffaea',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const blob: Blob | null = await new Promise((res) =>
+        canvas.toBlob((b) => res(b), 'image/png', 0.95),
+      );
+      if (!blob) throw new Error('blob is null');
+      const file = new File([blob], `${page.date}.png`, { type: 'image/png' });
+      const navAny = navigator as Navigator & { canShare?: (d: { files: File[] }) => boolean };
+      if (navAny.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'ほぼ日のしおり' });
+          return;
+        } catch (e) {
+          if ((e as Error).name === 'AbortError') return;
+        }
+      }
+      // fallback: download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${page.date}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert('画像にできませんでした。');
+    } finally {
+      setSharing(false);
+    }
+  };
+
   const goNext = () => {
-    if (!nextPage) return;
     commitText();
-    setFlipDir('next');
-    setTimeout(() => onOpenPage(nextPage.id), 140);
+    if (side === 'left') {
+      setFlipDir('next');
+      setTimeout(() => {
+        setSide('right');
+        setFlipDir('none');
+      }, 140);
+      return;
+    }
+    if (nextPage) {
+      setFlipDir('next');
+      setTimeout(() => {
+        setSide('left');
+        onOpenPage(nextPage.id);
+      }, 140);
+    }
   };
   const goPrev = () => {
-    if (!prevPage) return;
     commitText();
-    setFlipDir('prev');
-    setTimeout(() => onOpenPage(prevPage.id), 140);
+    if (side === 'right') {
+      setFlipDir('prev');
+      setTimeout(() => {
+        setSide('left');
+        setFlipDir('none');
+      }, 140);
+      return;
+    }
+    if (prevPage) {
+      setFlipDir('prev');
+      setTimeout(() => {
+        setSide('right');
+        onOpenPage(prevPage.id);
+      }, 140);
+    }
   };
+
+  const canGoNext = side === 'left' || !!nextPage;
+  const canGoPrev = side === 'right' || !!prevPage;
 
   // touch swipe
   const touch = useRef<{ x: number; y: number } | null>(null);
@@ -184,8 +281,8 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           ← もくじ
         </button>
         <span className="paging">
-          <button className="pager" onClick={goPrev} disabled={!prevPage} aria-label="前">‹</button>
-          <button className="pager" onClick={goNext} disabled={!nextPage} aria-label="次">›</button>
+          <button className="pager" onClick={goPrev} disabled={!canGoPrev} aria-label="前">‹</button>
+          <button className="pager" onClick={goNext} disabled={!canGoNext} aria-label="次">›</button>
         </span>
         <button
           className={`link star-toggle${page.highlight ? ' on' : ''}`}
@@ -196,11 +293,9 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
         </button>
       </header>
 
-      <div className="paper-spread">
-        <span className="spread-gutter" aria-hidden="true" />
-
-        <div className="paper-side paper-left">
-          {/* 付箋（左ページ左上） */}
+      <div className={`paper-single show-${side}`}>
+        <div className={`paper-side paper-${side}`}>
+          {/* 付箋 */}
           <button
             className={`sticky-tag${tagInfo ? '' : ' empty'}`}
             style={tagInfo ? { background: tagInfo.bg, color: tagInfo.ink } : undefined}
@@ -216,7 +311,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             )}
           </button>
 
-          {/* 日付（左ページ上部・タップで西暦/和暦切替） */}
+          {/* 日付（タップで西暦/和暦切替） */}
           <button
             className={`page-date ${nb.calendarMode}`}
             onClick={() => {
@@ -234,14 +329,14 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             <small>（{weekdayJP(page.date)}）</small>
           </button>
 
-          {/* 写真（左ページ中央） */}
+          {/* 写真（上部） */}
           <div className="photo-slot">
-            {page.photo ? (
+            {currentPhoto ? (
               <div
-                className={`framed frame-${page.frame} mask-${(page.id.charCodeAt(0) + page.id.length) % 4}`}
+                className={`framed frame-${currentFrame} mask-${(page.id.charCodeAt(0) + page.id.length + (isRight ? 1 : 0)) % 4}`}
                 onClick={() => setShowFramePick(true)}
               >
-                <img src={page.photo} alt="" />
+                <img src={currentPhoto} alt="" />
                 <button
                   className="swipe-arrow left"
                   onClick={(e) => { e.stopPropagation(); cycleFrame(-1); }}
@@ -271,43 +366,82 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             )}
           </div>
 
-          <span className="page-num left-num">{page.date.split('-')[2]}</span>
-        </div>
-
-        <div className="paper-side paper-right">
-          {/* 一言（右ページ） */}
+          {/* 一言（下部） */}
           <textarea
             className="oneline"
             value={text}
             onChange={(e) => setText(e.target.value)}
             onBlur={commitText}
-            placeholder="きょうの ひとこと…"
-            maxLength={200}
+            placeholder={isRight ? 'もうすこし、書いてみる…' : 'きょうの ひとこと…'}
+            maxLength={400}
             rows={6}
           />
 
-          {/* スタンプ（右ページ右下） */}
-          <button
-            className={`stamp-slot${stampInfo ? '' : ' empty'}`}
-            onClick={() => setShowStampPick(true)}
-            aria-label="きょうのスタンプ"
-          >
-            {stampInfo ? <Emoji char={stampInfo.label} size={32} /> : '＋'}
-          </button>
+          {/* スタンプ（右ページの右下のみ） */}
+          {isRight && (
+            <button
+              className={`stamp-slot${stampInfo ? '' : ' empty'}`}
+              onClick={() => setShowStampPick(true)}
+              aria-label="きょうのスタンプ"
+            >
+              {stampInfo ? <Emoji char={stampInfo.label} size={32} /> : '＋'}
+            </button>
+          )}
 
-          <span className="page-num right-num">{page.date.split('-')[2]}</span>
+          <span className={`page-num ${isRight ? 'right-num' : 'left-num'}`}>
+            {page.date.split('-')[2]} ・ {isRight ? '右' : '左'}
+          </span>
         </div>
       </div>
 
       <div className="page-actions">
-        {page.photo && (
+        {currentPhoto && (
           <button className="ghost small" onClick={removePhoto}>
             しゃしんを 外す
           </button>
         )}
+        <button className="link" onClick={shareSpread} disabled={sharing}>
+          {sharing ? '画像にしています…' : '画像で 共有'}
+        </button>
         <button className="link danger" onClick={removePage}>
           このページを削除
         </button>
+      </div>
+
+      {/* キャプチャ用の見開きレンダリング（画面外） */}
+      <div ref={captureRef} className="capture-spread" aria-hidden="true">
+        {(['left', 'right'] as const).map((s) => {
+          const ph = s === 'right' ? page.photoRight : page.photo;
+          const fr = (s === 'right' ? page.frameRight : page.frame) ?? 'plain';
+          const tx = s === 'right' ? (page.textRight ?? '') : page.text;
+          return (
+            <div key={s} className={`capture-page capture-${s}`}>
+              {tagInfo && (
+                <span
+                  className="cap-tag"
+                  style={{ background: tagInfo.bg, color: tagInfo.ink }}
+                >
+                  {tagInfo.emoji} {tagInfo.label}
+                </span>
+              )}
+              <div className={`cap-date ${nb.calendarMode}`}>
+                {formatDate(page.date, nb.calendarMode)}
+                <small>（{weekdayJP(page.date)}）</small>
+              </div>
+              <div className="cap-photo">
+                {ph && (
+                  <div className={`framed frame-${fr} mask-${(page.id.charCodeAt(0) + page.id.length + (s === 'right' ? 1 : 0)) % 4}`}>
+                    <img src={ph} alt="" crossOrigin="anonymous" />
+                  </div>
+                )}
+              </div>
+              <div className="cap-text">{tx}</div>
+              {s === 'right' && stampInfo && (
+                <div className="cap-stamp">{stampInfo.label}</div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {showTagPick && (

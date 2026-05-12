@@ -8,11 +8,17 @@ export interface Page {
   id: string;
   notebookId: string;
   date: string; // YYYY-MM-DD
-  text: string; // 一言（短め）
-  tag?: Tag;
-  stamp?: Stamp;
+  // 左ページ
+  text: string;
   photo?: string;
   frame: PhotoFrame;
+  // 右ページ（任意）
+  textRight?: string;
+  photoRight?: string;
+  frameRight?: PhotoFrame;
+  // 共通
+  tag?: Tag;
+  stamp?: Stamp;
   highlight: boolean;
   createdAt: number;
   updatedAt: number;
