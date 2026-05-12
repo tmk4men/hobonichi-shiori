@@ -24,16 +24,22 @@ export default defineConfig({
         scope: '.',
         icons: [
           {
-            src: 'icon-192.svg',
+            src: 'icons/icon-a-192.png',
             sizes: '192x192',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
+            type: 'image/png',
+            purpose: 'any',
           },
           {
-            src: 'icon-512.svg',
+            src: 'icons/icon-a-512.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
-            purpose: 'any maskable',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: 'icons/icon-a-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
       },
