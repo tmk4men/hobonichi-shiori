@@ -20,5 +20,5 @@ export function saveIconChoice(c: IconChoice): void {
 }
 
 export function iconUrl(c: IconChoice): string {
-  return `${import.meta.env.BASE_URL}icons/icon-${c}.png`;
+  return `${import.meta.env.BASE_URL}icons/icon-${c}.webp`;
 }

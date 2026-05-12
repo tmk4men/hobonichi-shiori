@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { AppData } from './types';
-import { loadData, saveData } from './storage';
+import { ensureTodayPage, loadData, saveData } from './storage';
 import { loadLock } from './auth';
 import { applyWriteFont } from './writeFont';
 import Shelf from './components/Shelf';
@@ -61,7 +61,17 @@ export default function App() {
       return (
         <Shelf
           data={data}
-          onOpen={(id) => setScreen({ kind: 'notebook', notebookId: id })}
+          onOpen={(id) => {
+            // ノートを開いたら、今日のページへ直行
+            const { data: nextData, pageId } = ensureTodayPage(data, id);
+            if (!pageId) {
+              // 45ページ上限。もくじへ
+              setScreen({ kind: 'notebook', notebookId: id });
+              return;
+            }
+            if (nextData !== data) setData(nextData);
+            setScreen({ kind: 'page', notebookId: id, pageId });
+          }}
           onChange={setData}
           onShowHighlights={() => setScreen({ kind: 'highlights' })}
           onOpenPage={goPage}

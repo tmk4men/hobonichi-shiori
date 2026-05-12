@@ -386,6 +386,34 @@ export function pickBookmarkOfTheDay(cards: HighlightCard[]): HighlightCard | un
   return cards[seed % cards.length];
 }
 
+const MAX_PAGES_PER_NOTEBOOK = 45;
+
+// 今日のページを見つける。なければ作る。
+// 戻り値: 更新後のデータと、開くべきページID（ノートが上限の場合は undefined）
+export function ensureTodayPage(
+  data: AppData,
+  notebookId: string,
+): { data: AppData; pageId: string | undefined } {
+  const today = todayStr();
+  const existing = data.pages.find((p) => p.notebookId === notebookId && p.date === today);
+  if (existing) return { data, pageId: existing.id };
+  const count = data.pages.filter((p) => p.notebookId === notebookId).length;
+  if (count >= MAX_PAGES_PER_NOTEBOOK) return { data, pageId: undefined };
+  const page: Page = {
+    id: newId(),
+    notebookId,
+    date: today,
+    text: '',
+    frame: 'plain',
+    highlight: false,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    viewCount: 1,
+    lastViewedAt: Date.now(),
+  };
+  return { data: { ...data, pages: [...data.pages, page] }, pageId: page.id };
+}
+
 export function incrementView(data: AppData, pageId: string): AppData {
   return {
     ...data,

@@ -41,7 +41,7 @@ async function compressImage(file: File, maxSize = 1280, quality = 0.78): Promis
     canvas.height = h;
     const ctx = canvas.getContext('2d')!;
     ctx.drawImage(img, 0, 0, w, h);
-    return canvas.toDataURL('image/jpeg', quality);
+    return canvas.toDataURL('image/webp', quality);
   } finally {
     URL.revokeObjectURL(url);
   }
@@ -57,6 +57,14 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const [showTagPick, setShowTagPick] = useState(false);
   const [showStampPick, setShowStampPick] = useState(false);
   const [showFramePick, setShowFramePick] = useState(false);
+
+  // ピッカーを開く前にフォーカスを外してキーボードを閉じる
+  // （キーボードが開いていると dvh が小さくなりシートの下端が見切れる）
+  const openPicker = (setter: (v: boolean) => void) => {
+    const el = document.activeElement;
+    if (el instanceof HTMLElement) el.blur();
+    setter(true);
+  };
   const [flipDir, setFlipDir] = useState<'none' | 'next' | 'prev'>('none');
   const [side, setSide] = useState<'left' | 'right'>('left');
 
@@ -123,7 +131,12 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     });
   };
 
+  const MAX_TEXT_LEN = 30;
+  const remaining = MAX_TEXT_LEN - [...text].length;
+  const isOverLimit = remaining < 0;
+
   const commitText = () => {
+    if (isOverLimit) return; // 30文字超過時は保存しない
     if (isRight) {
       if (text !== (page.textRight ?? '')) patch({ textRight: text });
     } else {
@@ -216,40 +229,51 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       const canvas = await html2canvas(node, {
         backgroundColor: '#fffaea',
         scale: 2,
-        useCORS: true,
-        allowTaint: true,
+        useCORS: false,
+        allowTaint: false,
         logging: false,
         width: 1280,
         height: 960,
         windowWidth: 1280,
         windowHeight: 960,
       });
-      const blob: Blob | null = await new Promise((res) =>
-        canvas.toBlob((b) => res(b), 'image/png', 0.95),
-      );
-      if (!blob) throw new Error('blobの生成に失敗');
-      const file = new File([blob], `${page.date}.png`, { type: 'image/png' });
+      const tryToBlob = (type: string, quality: number) =>
+        new Promise<Blob | null>((res) => canvas.toBlob((b) => res(b), type, quality));
+      let blob = await tryToBlob('image/webp', 0.92);
+      let mime = 'image/webp';
+      let ext = 'webp';
+      if (!blob) {
+        // 一部環境はwebp未対応。pngにフォールバック
+        blob = await tryToBlob('image/png', 0.95);
+        mime = 'image/png';
+        ext = 'png';
+      }
+      if (!blob) throw new Error('画像の生成に失敗しました');
+      const file = new File([blob], `${page.date}.${ext}`, { type: mime });
       const navAny = navigator as Navigator & { canShare?: (d: { files: File[] }) => boolean };
-      if (navAny.canShare?.({ files: [file] })) {
+      const canUseShare = !!navAny.canShare?.({ files: [file] }) && !!navigator.share;
+      if (canUseShare) {
         try {
           await navigator.share({ files: [file], title: 'ひびのしおり' });
           return;
         } catch (e) {
-          if ((e as Error).name === 'AbortError') return;
+          const name = (e as Error).name;
+          // ユーザーがキャンセル
+          if (name === 'AbortError') return;
+          // SecurityError等は黙ってダウンロードにフォールバック
         }
       }
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${page.date}.png`;
+      a.download = `${page.date}.${ext}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (err) {
       console.error('shareSpread error:', err);
-      const msg = err instanceof Error ? err.message : String(err);
-      alert(`画像にできませんでした。\n${msg}`);
+      alert('画像にできませんでした。\nもう一度お試しください。');
     } finally {
       node.style.visibility = prevVisibility;
       node.style.zIndex = prevZ;
@@ -370,7 +394,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
               ['--sticky-left' as string]: `${stickyLeft}px`,
               ...(tagInfo ? { background: tagInfo.bg, color: tagInfo.ink } : {}),
             }}
-            onClick={() => setShowTagPick(true)}
+            onClick={() => openPicker(setShowTagPick)}
             aria-label="タグ"
           >
             {tagInfo ? (
@@ -416,7 +440,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
                   ['--mask2-right' as string]: `${mask2Right}px`,
                   ['--mask2-rot' as string]: `${mask2Rot}deg`,
                 }}
-                onClick={() => setShowFramePick(true)}
+                onClick={() => openPicker(setShowFramePick)}
               >
                 <img src={currentPhoto} alt="" />
                 <button
@@ -460,20 +484,22 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
 
           {/* 一言（下部） */}
           <textarea
-            className="oneline"
+            className={`oneline${isOverLimit ? ' over' : ''}`}
             value={text}
             onChange={(e) => { setText(e.target.value); playWrite(); }}
             onBlur={commitText}
             placeholder={isRight ? 'もうすこし、書いてみる…' : 'きょうの ひとこと…'}
-            maxLength={400}
-            rows={6}
+            rows={3}
           />
+          <div className={`char-counter${isOverLimit ? ' over' : ''}`} aria-live="polite">
+            {isOverLimit ? `${remaining}` : `${[...text].length} / ${MAX_TEXT_LEN}`}
+          </div>
 
           {/* スタンプ（右ページの右下のみ） */}
           {isRight && (
             <button
               className={`stamp-slot${stampInfo ? '' : ' empty'}`}
-              onClick={() => setShowStampPick(true)}
+              onClick={() => openPicker(setShowStampPick)}
               aria-label="きょうのスタンプ"
             >
               {stampInfo ? <Emoji char={stampInfo.label} size={32} /> : '＋'}
@@ -528,7 +554,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
                 <div className="cap-photo">
                   {ph && (
                     <div className={`framed frame-${fr} mask-${(page.id.charCodeAt(0) + page.id.length + (s === 'right' ? 1 : 0)) % 4}`}>
-                      <img src={ph} alt="" crossOrigin="anonymous" />
+                      <img src={ph} alt="" />
                     </div>
                   )}
                 </div>
