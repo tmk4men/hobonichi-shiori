@@ -11,10 +11,12 @@ export interface Page {
   // 左ページ
   text: string;
   photo?: string;
+  photoCaption?: string;
   frame: PhotoFrame;
   // 右ページ（任意）
   textRight?: string;
   photoRight?: string;
+  photoCaptionRight?: string;
   frameRight?: PhotoFrame;
   // 共通
   tag?: Tag;

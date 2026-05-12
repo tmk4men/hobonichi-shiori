@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import type { AppData, CoverTheme, Notebook } from '../types';
-import { COVER_THEMES } from '../types';
+import { COVER_THEMES, STAMP_BY_KEY, TAG_BY_KEY } from '../types';
 import {
   buildHighlights,
   findNotebook,
   formatDate,
   newId,
   pickBookmarkOfTheDay,
+  weekdayJP,
 } from '../storage';
 import Emoji from './Emoji';
 import MaterialsView from './MaterialsView';
@@ -105,44 +106,59 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
         </p>
       )}
 
-      {tab === 'shelf' && bookmark && (
-        <button
-          className="bookmark"
-          onClick={() => onOpenPage(bookmark.page.notebookId, bookmark.page.id)}
-        >
-          <span className="bm-ribbon" />
-          <span className="bm-title">{bookmark.card.title}</span>
-          <span className="bm-page">
-            {bookmark.page.tag && (
-              <span className="bm-tag">
-                <Emoji
-                  char={
-                    // map tag emoji
-                    (
-                      {
-                        meal: '🍚',
-                        outing: '🚶',
-                        happy: '✨',
-                        play: '🎮',
-                        daily: '☁️',
-                      } as Record<string, string>
-                    )[bookmark.page.tag]
-                  }
-                  size={16}
-                />
-              </span>
-            )}
-            <span className="bm-text">
-              {bookmark.page.text.slice(0, 30) || '（白紙のページ）'}
+      {tab === 'shelf' && bookmark && (() => {
+        const p = bookmark.page;
+        const tagInfo = p.tag ? TAG_BY_KEY[p.tag] : undefined;
+        const stampInfo = p.stamp ? STAMP_BY_KEY[p.stamp] : undefined;
+        const theme = bookmark.nb ? COVER_THEMES.find((c) => c.key === bookmark.nb!.cover) : undefined;
+        const photo = p.photo ?? p.photoRight;
+        return (
+          <button
+            className={`bookmark-big${photo ? ' has-photo' : ''}`}
+            onClick={() => onOpenPage(p.notebookId, p.id)}
+            style={theme ? { ['--bm-cover' as string]: theme.bg } : undefined}
+          >
+            <span className="bm-ribbon" />
+            <span className="bm-header">
+              <span className="bm-eyebrow">{bookmark.card.title}</span>
             </span>
-          </span>
-          <span className="bm-date">
-            {bookmark.nb
-              ? formatDate(bookmark.page.date, bookmark.nb.calendarMode)
-              : bookmark.page.date}
-          </span>
-        </button>
-      )}
+            <span className="bm-body">
+              {photo && (
+                <span className="bm-photo">
+                  <img src={photo} alt="" />
+                </span>
+              )}
+              <span className="bm-text-area">
+                {tagInfo && (
+                  <span
+                    className="bm-tag-sticker"
+                    style={{ background: tagInfo.bg, color: tagInfo.ink }}
+                  >
+                    <Emoji char={tagInfo.emoji} size={14} /> {tagInfo.label}
+                  </span>
+                )}
+                <span className={`bm-date-big ${bookmark.nb?.calendarMode ?? 'seireki'}`}>
+                  {bookmark.nb
+                    ? formatDate(p.date, bookmark.nb.calendarMode)
+                    : p.date}
+                  <small>（{weekdayJP(p.date)}）</small>
+                </span>
+                <span className="bm-body-text">
+                  {p.text.slice(0, 80) || (p.textRight ?? '').slice(0, 80) || '（白紙のページ）'}
+                </span>
+                <span className="bm-foot">
+                  <span className="bm-nbname">{bookmark.nb?.title ?? ''}</span>
+                  {stampInfo && (
+                    <span className="bm-stamp">
+                      <Emoji char={stampInfo.label} size={22} />
+                    </span>
+                  )}
+                </span>
+              </span>
+            </span>
+          </button>
+        );
+      })()}
 
       <p className="shelf-hint">本棚から、ノートをひらく。</p>
 

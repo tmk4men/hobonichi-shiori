@@ -98,6 +98,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const isRight = side === 'right';
   const currentPhoto = isRight ? page.photoRight : page.photo;
   const currentFrame = (isRight ? page.frameRight : page.frame) ?? 'plain';
+  const currentCaption = isRight ? (page.photoCaptionRight ?? '') : (page.photoCaption ?? '');
 
   const patch = (changes: Partial<Page>) => {
     onChange({
@@ -157,8 +158,14 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   };
 
   const removePhoto = () => {
-    if (isRight) patch({ photoRight: undefined });
-    else patch({ photo: undefined });
+    if (isRight) patch({ photoRight: undefined, photoCaptionRight: undefined });
+    else patch({ photo: undefined, photoCaption: undefined });
+  };
+
+  const setCaption = (v: string) => {
+    const val = v || undefined;
+    if (isRight) patch({ photoCaptionRight: val });
+    else patch({ photoCaption: val });
   };
 
   const removePage = () => {
@@ -376,6 +383,16 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             )}
           </div>
 
+          {currentPhoto && (
+            <input
+              className="photo-caption"
+              value={currentCaption}
+              onChange={(e) => setCaption(e.target.value)}
+              placeholder="ひとこと そえる…"
+              maxLength={40}
+            />
+          )}
+
           {/* 一言（下部） */}
           <textarea
             className="oneline"
@@ -429,6 +446,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             const ph = s === 'right' ? page.photoRight : page.photo;
             const fr = (s === 'right' ? page.frameRight : page.frame) ?? 'plain';
             const tx = s === 'right' ? (page.textRight ?? '') : page.text;
+            const cap = s === 'right' ? (page.photoCaptionRight ?? '') : (page.photoCaption ?? '');
             return (
               <div key={s} className={`capture-page capture-${s}`}>
                 {tagInfo && (
@@ -450,6 +468,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
                     </div>
                   )}
                 </div>
+                {ph && cap && <div className="cap-caption">{cap}</div>}
                 <div className="cap-text">{tx}</div>
                 {s === 'right' && stampInfo && (
                   <div className="cap-stamp">{stampInfo.label}</div>
