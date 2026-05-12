@@ -400,6 +400,7 @@ textarea {
 }
 .sheet-bg {
   align-items: flex-end;
+  padding: 8px 8px 0;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -422,6 +423,11 @@ textarea {
   border-radius: 20px 20px 0 0;
   max-width: 520px;
   margin-bottom: -2px;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
 }
 .modal::before,
 .sheet::before {
@@ -537,9 +543,9 @@ textarea {
   gap: 8px;
 }
 .tag-opt {
-  padding: 14px 12px;
+  padding: 12px 10px;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   text-align: left;
   border: 2px solid transparent;
   box-shadow:
@@ -548,6 +554,10 @@ textarea {
   letter-spacing: 0.04em;
   font-family: var(--f-body);
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
 }
 .tag-opt::after {
   content: '';
