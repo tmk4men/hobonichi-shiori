@@ -68,7 +68,7 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
     <div className="shelf">
       <header className="appbar">
         <span style={{ width: 36 }} />
-        <h1>ほぼ日のしおり</h1>
+        <h1>ひびのしおり</h1>
         <button
           className="link hamburger"
           onClick={onOpenMenu}

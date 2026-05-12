@@ -46,7 +46,7 @@ export default function LockScreen({ onUnlock }: Props) {
     <div className="lock-screen">
       <div className="lock-card">
         <img className="lock-icon" src={iconUrl(icon)} alt="" />
-        <h1>ほぼ日のしおり</h1>
+        <h1>ひびのしおり</h1>
         <p className="lock-sub">4けたの 数字を 入れて ひらく。</p>
 
         <div className="pin-dots">

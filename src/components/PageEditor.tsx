@@ -188,7 +188,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
       const navAny = navigator as Navigator & { canShare?: (d: { files: File[] }) => boolean };
       if (navAny.canShare?.({ files: [file] })) {
         try {
-          await navigator.share({ files: [file], title: 'ほぼ日のしおり' });
+          await navigator.share({ files: [file], title: 'ひびのしおり' });
           return;
         } catch (e) {
           if ((e as Error).name === 'AbortError') return;
@@ -460,7 +460,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
         </div>
         <div className="capture-foot">
           <span className="cap-foot-title">{nb.title}</span>
-          <span className="cap-foot-brand">ほぼ日のしおり</span>
+          <span className="cap-foot-brand">ひびのしおり</span>
         </div>
       </div>
 

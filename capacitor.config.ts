@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.hobonichi.shiori',
-  appName: 'ほぼ日のしおり',
+  appName: 'ひびのしおり',
   webDir: 'dist',
   backgroundColor: '#efe9d8',
   android: {

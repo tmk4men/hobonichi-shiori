@@ -12,7 +12,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'ほぼ日のしおり',
+        name: 'ひびのしおり',
         short_name: 'しおり',
         description: '人生の断片を、あとから触れられる形で残すノート。',
         lang: 'ja',

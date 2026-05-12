@@ -31,7 +31,7 @@ export default function Welcome({ onComplete }: Props) {
       {step === 0 && (
         <div className="welcome-step welcome-intro">
           <img className="welcome-icon" src={iconUrl(icon)} alt="" />
-          <h1>ほぼ日のしおり</h1>
+          <h1>ひびのしおり</h1>
           <p className="welcome-lead">
             ぴかぴかの 写真ではなく、
             <br />
