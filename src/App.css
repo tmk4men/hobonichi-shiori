@@ -252,24 +252,30 @@ textarea {
 }
 
 .bookshelf {
-  padding: 8px 22px 40px;
+  padding: 14px 18px 40px;
   position: relative;
-}
-.shelf-side {
-  position: absolute;
-  top: 0;
-  bottom: 36px;
-  width: 10px;
-  background: linear-gradient(to bottom, #7a5a3e, #5c4128);
   background-image:
-    linear-gradient(to bottom, rgba(255,255,255,0.04), transparent 30%),
-    url('/wood.svg');
-  background-size: 100% 100%, 40px 100%;
-  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.3);
-  border-radius: 2px;
+    linear-gradient(to bottom, rgba(60, 40, 20, 0.04), transparent 80px),
+    url('/bookshelf-bg.webp');
+  background-size: cover;
+  background-position: center top;
+  border-radius: 6px;
+  margin: 6px 12px 24px;
+  box-shadow:
+    inset 0 0 0 1px rgba(60, 40, 20, 0.12),
+    0 6px 18px rgba(60, 40, 20, 0.18);
+  overflow: hidden;
 }
-.shelf-side.left { left: 12px; }
-.shelf-side.right { right: 12px; transform: scaleX(-1); }
+.bookshelf::before {
+  /* 全体を少し落ち着かせる薄いオーバーレイ（本との対比を出す） */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.08));
+  pointer-events: none;
+}
+/* 壁面画像で十分なので側板は不要 */
+.shelf-side { display: none; }
 
 .shelf-row {
   position: relative;
@@ -359,23 +365,24 @@ textarea {
 
 .shelf-plank {
   position: relative;
-  height: 16px;
-  background-image: url('/wood.svg');
-  background-size: 100% 100%;
-  border-radius: 0 0 4px 4px;
+  height: 10px;
+  background: linear-gradient(to bottom, #6a4d31 0%, #4f361f 70%, #3e2a17 100%);
+  border-radius: 0 0 3px 3px;
   box-shadow:
-    0 6px 10px rgba(40, 25, 10, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    0 4px 8px rgba(40, 25, 10, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.35);
   margin-bottom: 22px;
+  z-index: 2;
 }
 .shelf-plank::before {
+  /* 棚板の上面に落ちる影（本の下のシャドウ） */
   content: '';
   position: absolute;
-  inset: -2px 0 auto 0;
-  height: 2px;
-  background: rgba(0, 0, 0, 0.25);
-  filter: blur(1.5px);
+  inset: -3px 0 auto 0;
+  height: 3px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
+  filter: blur(0.5px);
 }
 
 /* --- Modal / Sheet --- */
