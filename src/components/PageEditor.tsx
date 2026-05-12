@@ -100,6 +100,20 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const currentFrame = (isRight ? page.frameRight : page.frame) ?? 'plain';
   const currentCaption = isRight ? (page.photoCaptionRight ?? '') : (page.photoCaption ?? '');
 
+  // ページIDから安定した位置・角度を計算（同じページは常に同じ）
+  const seed = (page.id.charCodeAt(0) + page.id.charCodeAt(Math.min(2, page.id.length - 1)) + (isRight ? 7 : 0)) % 100;
+  const stickyTilt = ((seed % 9) - 4) * 0.6; // -2.4°〜+2.4°
+  const stickyLeft = 8 + (seed % 6); // 8〜13px
+  const baseTilt = (((seed * 3) % 7) - 3) * 0.4; // -1.2°〜+1.2°
+  const photoTilt = currentFrame === 'polaroid' ? baseTilt - 2 : baseTilt;
+  const mask1Top = -10 + (seed % 4) * 2;
+  const mask1Left = -10 + ((seed * 5) % 7) * 4;
+  const mask1Rot = -22 + ((seed * 7) % 14);
+  const mask2Bottom = -10 + ((seed * 3) % 4) * 2;
+  const mask2Right = -10 + ((seed * 11) % 7) * 4;
+  const mask2Rot = 14 + ((seed * 13) % 16);
+  const maskColor = seed % 4;
+
   const patch = (changes: Partial<Page>) => {
     onChange({
       ...data,
@@ -355,7 +369,11 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           {/* 付箋 */}
           <button
             className={`sticky-tag${tagInfo ? '' : ' empty'}`}
-            style={tagInfo ? { background: tagInfo.bg, color: tagInfo.ink } : undefined}
+            style={{
+              ['--sticky-tilt' as string]: `${stickyTilt}deg`,
+              ['--sticky-left' as string]: `${stickyLeft}px`,
+              ...(tagInfo ? { background: tagInfo.bg, color: tagInfo.ink } : {}),
+            }}
             onClick={() => setShowTagPick(true)}
             aria-label="タグ"
           >
@@ -392,7 +410,16 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           <div className="photo-slot">
             {currentPhoto ? (
               <div
-                className={`framed frame-${currentFrame} mask-${(page.id.charCodeAt(0) + page.id.length + (isRight ? 1 : 0)) % 4}`}
+                className={`framed frame-${currentFrame} mask-${maskColor}`}
+                style={{
+                  ['--photo-tilt' as string]: `${photoTilt}deg`,
+                  ['--mask1-top' as string]: `${mask1Top}px`,
+                  ['--mask1-left' as string]: `${mask1Left}px`,
+                  ['--mask1-rot' as string]: `${mask1Rot}deg`,
+                  ['--mask2-bottom' as string]: `${mask2Bottom}px`,
+                  ['--mask2-right' as string]: `${mask2Right}px`,
+                  ['--mask2-rot' as string]: `${mask2Rot}deg`,
+                }}
                 onClick={() => setShowFramePick(true)}
               >
                 <img src={currentPhoto} alt="" />

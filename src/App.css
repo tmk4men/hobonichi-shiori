@@ -114,19 +114,20 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 18px;
-  background: rgba(246, 240, 221, 0.85);
-  backdrop-filter: blur(10px) saturate(120%);
-  border-bottom: 1px dashed var(--rule);
+  padding: 12px 16px;
+  background: rgba(246, 240, 221, 0.78);
+  backdrop-filter: blur(12px) saturate(110%);
+  border-bottom: 1px solid rgba(60, 40, 20, 0.06);
 }
 .appbar h1 {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   margin: 0;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-align: center;
   flex: 1;
   font-family: var(--f-display);
+  opacity: 0.85;
 }
 .appbar h1 small {
   font-weight: 400;
@@ -854,8 +855,12 @@ textarea {
   /* ページ内テキストは表紙色を継承せず、紙のインクに固定 */
   color: var(--ink);
   background-image:
+    /* 紙の縁の薄いシミ */
+    radial-gradient(ellipse 200px 120px at 0% 0%, rgba(120, 80, 40, 0.05), transparent 70%),
+    radial-gradient(ellipse 220px 140px at 100% 100%, rgba(120, 80, 40, 0.06), transparent 70%),
+    radial-gradient(ellipse 180px 100px at 100% 0%, rgba(120, 80, 40, 0.035), transparent 70%),
     url('/paper.svg');
-  background-size: 240px;
+  background-size: auto, auto, auto, 240px;
   border-radius: 6px;
   box-shadow:
     0 8px 22px rgba(60, 40, 20, 0.16),
@@ -946,17 +951,16 @@ textarea {
 .sticky-tag {
   position: absolute;
   top: -8px;
-  left: 8px;
+  left: var(--sticky-left, 8px);
+  rotate: var(--sticky-tilt, -3deg);
   padding: 8px 10px 7px;
   font-size: 12px;
-  z-index: 3;
   font-weight: 400;
   border-radius: 2px;
   box-shadow:
     1px 3px 5px rgba(0, 0, 0, 0.22),
     inset 0 0 0 1px rgba(0, 0, 0, 0.05),
     inset 0 -8px 12px rgba(0, 0, 0, 0.04);
-  rotate: -3deg;
   background: #fff7d1;
   color: #6a5a30;
   letter-spacing: 0.06em;
@@ -1102,6 +1106,7 @@ textarea {
   position: relative;
   display: inline-block;
   max-width: 96%;
+  rotate: var(--photo-tilt, 0deg);
 }
 .framed img {
   display: block;
@@ -1136,10 +1141,21 @@ textarea {
 .frame-polaroid {
   background: #fff;
   padding: 10px 10px 42px;
-  rotate: -2deg;
+  /* .framed の rotate に上書きされる。PageEditor側で -2°ベースに加算 */
   box-shadow:
     0 6px 18px rgba(0, 0, 0, 0.22),
+    1px 1px 0 rgba(0, 0, 0, 0.05),
     inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+.frame-polaroid::before {
+  /* 紙の角の浮き */
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 30%);
+  border-radius: 1px;
+  z-index: 1;
 }
 .frame-polaroid img { border-radius: 0; }
 .frame-polaroid::after {
@@ -1172,8 +1188,16 @@ textarea {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
   border: 1px solid rgba(0, 0, 0, 0.04);
 }
-.frame-masking::before { top: -10px; left: -10px; rotate: -20deg; }
-.frame-masking::after { bottom: -10px; right: -10px; rotate: 18deg; }
+.frame-masking::before {
+  top: var(--mask1-top, -10px);
+  left: var(--mask1-left, -10px);
+  rotate: var(--mask1-rot, -20deg);
+}
+.frame-masking::after {
+  bottom: var(--mask2-bottom, -10px);
+  right: var(--mask2-right, -10px);
+  rotate: var(--mask2-rot, 18deg);
+}
 /* mask color variants */
 .frame-masking.mask-0::before { background-color: rgba(255, 222, 130, 0.92); }
 .frame-masking.mask-0::after  { background-color: rgba(190, 220, 200, 0.92); }

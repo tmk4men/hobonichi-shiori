@@ -43,11 +43,11 @@ export interface AppData {
 }
 
 export const TAG_DEF: { key: Tag; emoji: string; label: string; bg: string; ink: string }[] = [
-  { key: 'meal', emoji: '🍚', label: 'ごはん', bg: '#f5e9c5', ink: '#6a5530' },
-  { key: 'outing', emoji: '🚶', label: 'おでかけ', bg: '#cfe3ee', ink: '#2f5060' },
-  { key: 'happy', emoji: '✨', label: 'しあわせ', bg: '#fff4c2', ink: '#7d6420' },
-  { key: 'play', emoji: '🎮', label: 'あそび', bg: '#f3c7d3', ink: '#6a2a3c' },
-  { key: 'daily', emoji: '☁️', label: 'にちじょう', bg: '#d8d5cd', ink: '#4a4a48' },
+  { key: 'meal', emoji: '🍚', label: 'ごはん', bg: '#efe1bd', ink: '#6e5832' },
+  { key: 'outing', emoji: '🚶', label: 'おでかけ', bg: '#c7dbe5', ink: '#345564' },
+  { key: 'happy', emoji: '✨', label: 'しあわせ', bg: '#f3eab8', ink: '#7a6428' },
+  { key: 'play', emoji: '🎮', label: 'あそび', bg: '#e9c1cb', ink: '#6e2f3f' },
+  { key: 'daily', emoji: '☁️', label: 'にちじょう', bg: '#d2cfc6', ink: '#4f4f4c' },
 ];
 
 export const STAMP_DEF: { key: Stamp; label: string; meaning: string }[] = [
