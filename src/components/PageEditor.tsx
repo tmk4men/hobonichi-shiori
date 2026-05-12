@@ -499,15 +499,17 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
             )}
           </div>
 
-          {currentPhoto && (
-            <input
-              className="photo-caption"
-              value={currentCaption}
-              onChange={(e) => setCaption(e.target.value)}
-              placeholder="ひとこと そえる…"
-              maxLength={40}
-            />
-          )}
+          <div className="photo-caption-row">
+            {currentPhoto && (
+              <input
+                className="photo-caption"
+                value={currentCaption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder="ひとこと そえる…"
+                maxLength={40}
+              />
+            )}
+          </div>
 
           {/* 一言（下部） */}
           <textarea

@@ -1333,7 +1333,10 @@ textarea {
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 2px 0 10px;
+  /* 写真の有無に関わらず常に同じ高さを確保 */
+  min-height: min(220px, 28dvh);
   position: relative;
   z-index: 2;
 }
@@ -1343,7 +1346,7 @@ textarea {
   justify-content: center;
   width: 100%;
   max-width: 240px;
-  height: min(140px, 20dvh);
+  height: min(220px, 28dvh);
   border: 2px dashed rgba(60, 40, 20, 0.3);
   border-radius: 8px;
   cursor: pointer;
@@ -1361,10 +1364,19 @@ textarea {
 }
 .photo-add:hover { opacity: 1; }
 
+/* キャプション領域 — 写真の有無に関わらず同じ高さを確保 */
+.photo-caption-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 36px;
+  margin: -2px 0 10px;
+}
 .photo-caption {
   width: 80%;
   max-width: 280px;
-  margin: -2px auto 10px;
+  margin: 0 auto;
   display: block;
   border: none;
   border-bottom: 1px dashed rgba(60, 40, 20, 0.28);
