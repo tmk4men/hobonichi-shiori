@@ -7,7 +7,6 @@ interface Props {
   onShowHighlights: () => void;
   onShowNotebookManager: () => void;
   onShowPassword: () => void;
-  onShowIconChooser: () => void;
 }
 
 export default function Menu({
@@ -16,7 +15,6 @@ export default function Menu({
   onShowHighlights,
   onShowNotebookManager,
   onShowPassword,
-  onShowIconChooser,
 }: Props) {
   const [muted, setMutedState] = useState(isMuted());
   const toggleSound = () => {
@@ -70,19 +68,6 @@ export default function Menu({
                   ? 'ひらく とき、4けたを 聞く。'
                   : '必要なときだけ、4けたを 設定。'}
               </span>
-            </button>
-          </li>
-          <li>
-            <button
-              className="menu-item"
-              onClick={() => {
-                onClose();
-                onShowIconChooser();
-              }}
-            >
-              <span className="menu-mark">◯</span>
-              <span className="menu-label">ロックの 絵</span>
-              <span className="menu-sub">ひらく とき、最初に 見える絵を 選ぶ。</span>
             </button>
           </li>
           <li>

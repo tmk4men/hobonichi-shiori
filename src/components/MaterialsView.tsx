@@ -1,7 +1,15 @@
+import { useState } from 'react';
 import { COVER_THEMES, FRAME_DEF, STAMP_DEF, TAG_DEF } from '../types';
+import type { IconChoice } from '../iconChoice';
+import { iconUrl, loadIconChoice, saveIconChoice } from '../iconChoice';
 import Emoji from './Emoji';
 
 export default function MaterialsView() {
+  const [icon, setIcon] = useState<IconChoice>(loadIconChoice());
+  const pickIcon = (c: IconChoice) => {
+    setIcon(c);
+    saveIconChoice(c);
+  };
   return (
     <div className="materials">
       <p className="shelf-hint">ノートで 使える もの。</p>
@@ -72,6 +80,22 @@ export default function MaterialsView() {
         <div className="material-dates">
           <div className="material-date seireki">2026.05.12<small>（火）</small></div>
           <div className="material-date wareki">令和8年5月12日<small>（火）</small></div>
+        </div>
+      </section>
+
+      <section className="material-section">
+        <h2 className="material-h">アプリの アイコン</h2>
+        <p className="material-sub">ロック画面に 出る絵を 選ぶ。</p>
+        <div className="material-icons">
+          {(['a', 'b'] as IconChoice[]).map((c) => (
+            <button
+              key={c}
+              className={`material-icon${icon === c ? ' on' : ''}`}
+              onClick={() => pickIcon(c)}
+            >
+              <img src={iconUrl(c)} alt="" />
+            </button>
+          ))}
         </div>
       </section>
     </div>
