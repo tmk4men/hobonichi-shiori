@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <g transform="translate(40 40) rotate(-12)">
+    <circle r="32" fill="none" stroke="#c23434" stroke-width="3.5" opacity="0.85"/>
+    <circle r="27" fill="none" stroke="#c23434" stroke-width="1.6" opacity="0.7"/>
+    <!-- 完 -->
+    <text x="0" y="6" font-family="serif" font-size="24" fill="#c23434" text-anchor="middle" font-weight="900" opacity="0.92">完</text>
+  </g>
+  <!-- ink splatter -->
+  <g fill="#c23434" opacity="0.5">
+    <circle cx="12" cy="20" r="0.8"/>
+    <circle cx="68" cy="22" r="0.6"/>
+    <circle cx="64" cy="68" r="1"/>
+    <circle cx="18" cy="66" r="0.5"/>
+  </g>
+</svg>

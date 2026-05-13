@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <g transform="translate(40 40) rotate(-6)">
+    <rect x="-30" y="-30" width="60" height="60" rx="6" fill="none" stroke="#c23434" stroke-width="3" opacity="0.88"/>
+    <text x="0" y="-2" font-family="serif" font-size="16" fill="#c23434" text-anchor="middle" font-weight="700">寿</text>
+    <text x="0" y="16" font-family="serif" font-size="8" fill="#c23434" text-anchor="middle" letter-spacing="3">たんじょう</text>
+  </g>
+</svg>

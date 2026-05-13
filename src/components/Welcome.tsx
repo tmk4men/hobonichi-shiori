@@ -30,6 +30,11 @@ export default function Welcome({ onComplete }: Props) {
     <div className="welcome">
       {step === 0 && (
         <div className="welcome-step welcome-intro">
+          <img
+            className="welcome-hero"
+            src={`${import.meta.env.BASE_URL}illust/welcome-hero.svg`}
+            alt=""
+          />
           <img className="welcome-icon" src={iconUrl(icon)} alt="" />
           <h1>ひびのしおり</h1>
           <p className="welcome-lead">

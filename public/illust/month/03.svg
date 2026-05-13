@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- cherry blossom 桜 -->
+  <g transform="translate(24 24)">
+    <g fill="#fbd3d8" stroke="#c97a86" stroke-width="0.7">
+      <path d="M0 -12 Q4 -10 4 -6 Q4 -3 0 -2 Q-4 -3 -4 -6 Q-4 -10 0 -12 Z"/>
+      <path d="M0 -12 Q4 -10 4 -6 Q4 -3 0 -2 Q-4 -3 -4 -6 Q-4 -10 0 -12 Z" transform="rotate(72)"/>
+      <path d="M0 -12 Q4 -10 4 -6 Q4 -3 0 -2 Q-4 -3 -4 -6 Q-4 -10 0 -12 Z" transform="rotate(144)"/>
+      <path d="M0 -12 Q4 -10 4 -6 Q4 -3 0 -2 Q-4 -3 -4 -6 Q-4 -10 0 -12 Z" transform="rotate(-144)"/>
+      <path d="M0 -12 Q4 -10 4 -6 Q4 -3 0 -2 Q-4 -3 -4 -6 Q-4 -10 0 -12 Z" transform="rotate(-72)"/>
+    </g>
+    <!-- petal notch hint -->
+    <g stroke="#c97a86" stroke-width="0.6" fill="none">
+      <line x1="0" y1="-12" x2="0" y2="-8"/>
+    </g>
+    <circle r="1.8" fill="#f0a050"/>
+  </g>
+  <!-- small petals -->
+  <g fill="#fbd3d8" opacity="0.85">
+    <ellipse cx="8" cy="10" rx="2.2" ry="1.4" transform="rotate(30 8 10)"/>
+    <ellipse cx="40" cy="38" rx="2.4" ry="1.6" transform="rotate(-20 40 38)"/>
+    <ellipse cx="42" cy="14" rx="1.8" ry="1.2" transform="rotate(60 42 14)"/>
+  </g>
+</svg>

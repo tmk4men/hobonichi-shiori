@@ -75,7 +75,7 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
 
       {cards.length === 0 ? (
         <div className="empty-state">
-          <img src={`${import.meta.env.BASE_URL}illust-empty.svg`} alt="" />
+          <img src={`${import.meta.env.BASE_URL}illust/empty-highlights.svg`} alt="" />
           <p className="empty">
             ページが もう少し たまると、
             <br />
@@ -86,6 +86,12 @@ export default function HighlightsView({ data, onBack, onOpenPage }: Props) {
         cards.map((card) => (
           <section key={card.id} className="recall-section">
             <h2 className="recall-h">{card.title}</h2>
+            <img
+              className="section-divider"
+              src={`${import.meta.env.BASE_URL}illust/divider-wave.svg`}
+              alt=""
+              aria-hidden="true"
+            />
             <div className="recall-scatter">
               {card.pages.map((p, i) => renderCard(p, i))}
             </div>

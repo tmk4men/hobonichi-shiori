@@ -216,6 +216,32 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
                       </span>
                     </div>
                   )}
+                  {/* 棚の小物（最終棚の右端） */}
+                  {ri === rows.length - 1 && (
+                    <>
+                      <img
+                        className="shelf-deco shelf-deco-plant"
+                        src={`${import.meta.env.BASE_URL}illust/shelf-plant.svg`}
+                        alt=""
+                        aria-hidden="true"
+                      />
+                      <img
+                        className="shelf-deco shelf-deco-cup"
+                        src={`${import.meta.env.BASE_URL}illust/shelf-cup.svg`}
+                        alt=""
+                        aria-hidden="true"
+                      />
+                    </>
+                  )}
+                  {/* 最初の棚に置時計 */}
+                  {ri === 0 && (
+                    <img
+                      className="shelf-deco shelf-deco-clock"
+                      src={`${import.meta.env.BASE_URL}illust/shelf-clock.svg`}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                  )}
                 </div>
                 <div className="shelf-plank" />
               </div>

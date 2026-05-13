@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 160" fill="none">
+  <!-- open book with turning page -->
+  <g>
+    <!-- shadow -->
+    <ellipse cx="110" cy="138" rx="84" ry="6" fill="#6b5a45" opacity="0.18"/>
+    <!-- left page -->
+    <path d="M28 36 Q70 28 110 32 L110 124 Q70 120 28 128 Z" fill="#fffaea" stroke="#a08a64" stroke-width="0.9"/>
+    <!-- right page (back) -->
+    <path d="M110 32 Q150 28 192 36 L192 128 Q150 120 110 124 Z" fill="#f6f0dd" stroke="#a08a64" stroke-width="0.9"/>
+    <!-- spine -->
+    <line x1="110" y1="30" x2="110" y2="126" stroke="#a08a64" stroke-width="0.8" opacity="0.6"/>
+    <!-- left dashed lines -->
+    <g stroke="#9a8460" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.6">
+      <line x1="40" y1="46" x2="100" y2="42"/>
+      <line x1="40" y1="56" x2="100" y2="52"/>
+      <line x1="40" y1="66" x2="92" y2="62"/>
+      <line x1="40" y1="76" x2="96" y2="72"/>
+    </g>
+    <!-- turning page -->
+    <path d="M110 32 Q140 24 168 34 Q150 76 110 124 Z" fill="#fffaea" stroke="#a08a64" stroke-width="0.9"/>
+    <path d="M110 32 Q140 24 168 34" fill="none" stroke="#c8b48a" stroke-width="0.6" opacity="0.7"/>
+    <g stroke="#9a8460" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.5">
+      <path d="M118 48 Q138 44 156 50" fill="none"/>
+      <path d="M120 60 Q138 58 154 64" fill="none"/>
+      <path d="M122 72 Q138 72 152 78" fill="none"/>
+    </g>
+    <!-- pencil -->
+    <g transform="translate(146 100) rotate(34)">
+      <rect x="0" y="0" width="46" height="5" rx="1" fill="#d8b86a"/>
+      <rect x="0" y="0" width="6" height="5" fill="#3a2f23"/>
+      <polygon points="46,0 54,2.5 46,5" fill="#f0e2c4"/>
+      <polygon points="50,1 54,2.5 50,4" fill="#3a2f23"/>
+    </g>
+  </g>
+</svg>

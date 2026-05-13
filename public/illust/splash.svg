@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sp-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0e6cd"/>
+      <stop offset="1" stop-color="#c8baa0"/>
+    </linearGradient>
+    <linearGradient id="sp-cover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c8b48a"/>
+      <stop offset="1" stop-color="#9a8260"/>
+    </linearGradient>
+    <linearGradient id="sp-paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="1" stop-color="#ece4ca"/>
+    </linearGradient>
+    <radialGradient id="sp-glow" cx="0.5" cy="0.3" r="0.7">
+      <stop offset="0" stop-color="#fff5d8" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#fff5d8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1080" height="1920" fill="url(#sp-bg)"/>
+  <rect width="1080" height="1920" fill="url(#sp-glow)"/>
+
+  <!-- book -->
+  <g transform="translate(540 920)">
+    <!-- shadow -->
+    <ellipse cx="0" cy="380" rx="380" ry="20" fill="#3a2f23" opacity="0.18"/>
+    <rect x="-300" y="-360" width="600" height="700" rx="36" fill="url(#sp-cover)" stroke="#5a4a32" stroke-width="4"/>
+    <rect x="-300" y="-360" width="100" height="700" rx="14" fill="#7a6240"/>
+    <line x1="-220" y1="-360" x2="-220" y2="340" stroke="#5a4a32" stroke-width="3" opacity="0.55"/>
+    <rect x="-300" y="-260" width="100" height="14" fill="#5a4a32" opacity="0.6"/>
+    <rect x="-300" y="220" width="100" height="14" fill="#5a4a32" opacity="0.6"/>
+    <rect x="-160" y="-280" width="420" height="540" rx="10" fill="url(#sp-paper)" stroke="#a08a64" stroke-width="2.4"/>
+    <g stroke="#9a8460" stroke-width="8" stroke-linecap="round" stroke-dasharray="14 18" opacity="0.55">
+      <line x1="-110" y1="-200" x2="220" y2="-200"/>
+      <line x1="-110" y1="-120" x2="220" y2="-120"/>
+      <line x1="-110" y1="-40" x2="180" y2="-40"/>
+      <line x1="-110" y1="40" x2="220" y2="40"/>
+      <line x1="-110" y1="120" x2="160" y2="120"/>
+    </g>
+    <!-- red ribbon -->
+    <path d="M120 -360 L120 30 L180 -10 L240 30 L240 -360 Z" fill="#c75959"/>
+    <path d="M120 -360 L120 30 L180 -10" fill="none" stroke="#7a2a2a" stroke-width="3" opacity="0.5"/>
+  </g>
+
+  <!-- title -->
+  <g transform="translate(540 460)" text-anchor="middle">
+    <text font-family="serif" font-size="78" fill="#3a2f23" letter-spacing="20">ひびのしおり</text>
+  </g>
+  <g transform="translate(540 540)" text-anchor="middle">
+    <text font-family="sans-serif" font-size="30" fill="#6b5a45" letter-spacing="12" opacity="0.78">日々を そっと しまう</text>
+  </g>
+
+  <!-- pampas accent -->
+  <g transform="translate(140 1640)" stroke="#a08a64" stroke-width="3" fill="none" opacity="0.55">
+    <path d="M0 100 Q-10 60 -20 20"/>
+    <path d="M0 100 Q-30 70 -50 50"/>
+    <path d="M0 100 Q-50 80 -80 70"/>
+  </g>
+  <g transform="translate(940 1640)" stroke="#a08a64" stroke-width="3" fill="none" opacity="0.55">
+    <path d="M0 100 Q10 60 20 20"/>
+    <path d="M0 100 Q30 70 50 50"/>
+    <path d="M0 100 Q50 80 80 70"/>
+  </g>
+</svg>

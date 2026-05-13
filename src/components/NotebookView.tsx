@@ -131,7 +131,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
 
       {pages.length === 0 ? (
         <div className="empty-state">
-          <img src={`${import.meta.env.BASE_URL}illust-empty.svg`} alt="" />
+          <img src={`${import.meta.env.BASE_URL}illust/empty-notebook.svg`} alt="" />
           <p className="empty">
             まだ なにも書かれていない。
             <br />
@@ -145,7 +145,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
             const s = p.stamp ? STAMP_BY_KEY[p.stamp] : undefined;
             return (
               <li key={p.id}>
-                <button className="page-row" onClick={() => onOpenPage(p.id)}>
+                <button className={`page-row${p.highlight ? ' highlighted' : ''}`} onClick={() => onOpenPage(p.id)}>
                   <span className="row-left">
                     {t && (
                       <span className="row-tag" style={{ background: t.bg, color: t.ink }}>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <g transform="translate(40 40) rotate(8)">
+    <circle r="32" fill="none" stroke="#c23434" stroke-width="3" opacity="0.85"/>
+    <text x="0" y="-4" font-family="serif" font-size="14" fill="#c23434" text-anchor="middle" font-weight="700">百日</text>
+    <text x="0" y="14" font-family="serif" font-size="10" fill="#c23434" text-anchor="middle" letter-spacing="2">きねん</text>
+  </g>
+  <g fill="#c23434" opacity="0.4">
+    <circle cx="14" cy="24" r="0.7"/>
+    <circle cx="62" cy="60" r="0.9"/>
+  </g>
+</svg>

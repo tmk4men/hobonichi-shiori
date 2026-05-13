@@ -45,6 +45,12 @@ export default function LockScreen({ onUnlock }: Props) {
   return (
     <div className="lock-screen">
       <div className="lock-card">
+        <img
+          className="lock-ribbon"
+          src={`${import.meta.env.BASE_URL}illust/lock-ribbon.svg`}
+          alt=""
+          aria-hidden="true"
+        />
         <img className="lock-icon" src={iconUrl(icon)} alt="" />
         <h1>ひびのしおり</h1>
         <p className="lock-sub">4けたの 数字を 入れて ひらく。</p>

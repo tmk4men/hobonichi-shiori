@@ -1,12 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-  <rect width="192" height="192" rx="36" fill="#efe9d8"/>
-  <rect x="32" y="36" width="128" height="124" rx="14" fill="#a98b6f"/>
-  <rect x="32" y="36" width="22" height="124" rx="6" fill="#8e6f55"/>
-  <g fill="#f6efd8" opacity="0.78">
-    <rect x="66" y="60" width="80" height="5" rx="2"/>
-    <rect x="66" y="76" width="80" height="5" rx="2"/>
-    <rect x="66" y="92" width="56" height="5" rx="2"/>
-    <rect x="66" y="108" width="70" height="5" rx="2"/>
+  <defs>
+    <linearGradient id="ic-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f0e6cd"/>
+      <stop offset="1" stop-color="#dcd0b0"/>
+    </linearGradient>
+    <linearGradient id="ic-cover" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c8b48a"/>
+      <stop offset="1" stop-color="#9a8260"/>
+    </linearGradient>
+    <linearGradient id="ic-paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffaea"/>
+      <stop offset="1" stop-color="#ece4ca"/>
+    </linearGradient>
+    <linearGradient id="ic-ribbon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d24858"/>
+      <stop offset="1" stop-color="#8a3a3a"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="40" fill="url(#ic-bg)"/>
+  <!-- subtle paper noise -->
+  <g opacity="0.15">
+    <circle cx="40" cy="32" r="1.4" fill="#6b5a45"/>
+    <circle cx="156" cy="60" r="1.6" fill="#6b5a45"/>
+    <circle cx="34" cy="156" r="1.2" fill="#6b5a45"/>
+    <circle cx="160" cy="172" r="1.4" fill="#6b5a45"/>
   </g>
-  <circle cx="134" cy="138" r="14" fill="#e7c4c0"/>
+  <!-- book cover -->
+  <rect x="30" y="30" width="132" height="138" rx="10" fill="url(#ic-cover)" stroke="#5a4a32" stroke-width="1.2"/>
+  <!-- spine -->
+  <rect x="30" y="30" width="22" height="138" rx="4" fill="#7a6240"/>
+  <line x1="48" y1="30" x2="48" y2="168" stroke="#5a4a32" stroke-width="0.8" opacity="0.6"/>
+  <!-- spine bands -->
+  <rect x="30" y="56" width="22" height="3" fill="#5a4a32" opacity="0.6"/>
+  <rect x="30" y="138" width="22" height="3" fill="#5a4a32" opacity="0.6"/>
+  <!-- paper inside -->
+  <rect x="62" y="46" width="86" height="106" rx="3" fill="url(#ic-paper)" stroke="#a08a64" stroke-width="0.6"/>
+  <!-- text lines -->
+  <g stroke="#9a8460" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 4" opacity="0.55">
+    <line x1="72" y1="64" x2="138" y2="64"/>
+    <line x1="72" y1="80" x2="138" y2="80"/>
+    <line x1="72" y1="96" x2="124" y2="96"/>
+    <line x1="72" y1="112" x2="138" y2="112"/>
+    <line x1="72" y1="128" x2="118" y2="128"/>
+  </g>
+  <!-- red bookmark ribbon -->
+  <path d="M124 30 L124 102 L138 90 L152 102 L152 30 Z" fill="url(#ic-ribbon)"/>
+  <path d="M124 30 L124 102 L138 90" fill="none" stroke="#6b2f24" stroke-width="0.6" opacity="0.55"/>
+  <!-- ribbon highlight -->
+  <line x1="128" y1="30" x2="128" y2="94" stroke="#f0a8a0" stroke-width="0.8" opacity="0.5"/>
 </svg>

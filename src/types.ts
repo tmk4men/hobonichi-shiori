@@ -2,7 +2,7 @@ export type CoverTheme = 'beige' | 'navy' | 'rose' | 'sage' | 'mocha' | 'ink';
 export type CalendarMode = 'wareki' | 'seireki';
 export type Tag = 'meal' | 'outing' | 'happy' | 'play' | 'daily';
 export type Stamp = 'sun' | 'moon' | 'rain' | 'happy' | 'sleep' | 'tea';
-export type PhotoFrame = 'plain' | 'polaroid' | 'masking' | 'film' | 'notebook';
+export type PhotoFrame = 'plain' | 'polaroid' | 'masking' | 'film' | 'notebook' | 'album';
 
 export interface Page {
   id: string;
@@ -65,6 +65,7 @@ export const FRAME_DEF: { key: PhotoFrame; label: string }[] = [
   { key: 'masking', label: 'マステ' },
   { key: 'film', label: 'フィルム' },
   { key: 'notebook', label: '手帳' },
+  { key: 'album', label: 'アルバム' },
 ];
 
 export const COVER_THEMES: { key: CoverTheme; label: string; bg: string; ink: string }[] = [

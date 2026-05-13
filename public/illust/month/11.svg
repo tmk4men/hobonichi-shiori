@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- ginkgo leaf いちょう -->
+  <g transform="translate(24 28)">
+    <path d="M0 -16 Q-14 0 -10 10 Q-4 14 0 10 Q4 14 10 10 Q14 0 0 -16 Z" fill="#e8c440" stroke="#9a7a20" stroke-width="0.7"/>
+    <g stroke="#9a7a20" stroke-width="0.4" fill="none" opacity="0.7">
+      <path d="M0 -14 L-6 6"/>
+      <path d="M0 -14 L0 8"/>
+      <path d="M0 -14 L6 6"/>
+      <path d="M0 -14 L-10 4"/>
+      <path d="M0 -14 L10 4"/>
+    </g>
+    <path d="M0 10 L0 16" stroke="#9a7a20" stroke-width="0.8"/>
+  </g>
+  <!-- acorn -->
+  <g transform="translate(10 38)">
+    <ellipse cx="0" cy="2" rx="4" ry="5" fill="#c89060" stroke="#6b4226" stroke-width="0.6"/>
+    <path d="M-4 0 Q0 -4 4 0 Z" fill="#6b4226"/>
+    <line x1="0" y1="-4" x2="0" y2="-6" stroke="#6b4226" stroke-width="0.8" stroke-linecap="round"/>
+  </g>
+</svg>

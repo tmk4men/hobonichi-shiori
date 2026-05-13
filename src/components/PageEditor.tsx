@@ -432,6 +432,27 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
 
       <div className={`paper-single show-${side}`}>
         <div className={`paper-side paper-${side}`}>
+          {/* 月のミニカット（左ページ） */}
+          {!isRight && (() => {
+            const mm = page.date.slice(5, 7);
+            return (
+              <img
+                className="month-cut"
+                src={`${import.meta.env.BASE_URL}illust/month/${mm}.svg`}
+                alt=""
+                aria-hidden="true"
+              />
+            );
+          })()}
+          {/* 右ページの角アクセント */}
+          {isRight && (
+            <img
+              className="page-corner-deco"
+              src={`${import.meta.env.BASE_URL}illust/page-corner-deco.svg`}
+              alt=""
+              aria-hidden="true"
+            />
+          )}
           {/* 付箋 */}
           <button
             className={`sticky-tag${tagInfo ? '' : ' empty'}`}
@@ -601,10 +622,18 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
                   </span>
                 )}
                 {s === 'left' && (
-                  <div className={`cap-date ${nb.calendarMode}`}>
-                    {formatDate(page.date, nb.calendarMode)}
-                    <small>（{weekdayJP(page.date)}）</small>
-                  </div>
+                  <>
+                    <img
+                      className="cap-month-cut"
+                      src={`${import.meta.env.BASE_URL}illust/month/${page.date.slice(5, 7)}.svg`}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    <div className={`cap-date ${nb.calendarMode}`}>
+                      {formatDate(page.date, nb.calendarMode)}
+                      <small>（{weekdayJP(page.date)}）</small>
+                    </div>
+                  </>
                 )}
                 <div className="cap-photo">
                   {ph && (

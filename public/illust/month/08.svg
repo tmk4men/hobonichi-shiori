@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <!-- watermelon ひまわり/スイカ -->
+  <path d="M6 28 A18 18 0 0 0 42 28 Z" fill="#d24858" stroke="#7a2a30" stroke-width="0.8"/>
+  <path d="M6 28 A18 18 0 0 0 42 28" fill="none" stroke="#f6f0dd" stroke-width="2"/>
+  <path d="M4 28 A20 20 0 0 0 44 28" fill="none" stroke="#3a6a2c" stroke-width="2.4"/>
+  <g fill="#2a1a14">
+    <ellipse cx="14" cy="34" rx="1" ry="1.6" transform="rotate(-20 14 34)"/>
+    <ellipse cx="22" cy="38" rx="1" ry="1.6"/>
+    <ellipse cx="30" cy="36" rx="1" ry="1.6" transform="rotate(20 30 36)"/>
+    <ellipse cx="18" cy="42" rx="1" ry="1.6" transform="rotate(-10 18 42)"/>
+    <ellipse cx="26" cy="42" rx="1" ry="1.6" transform="rotate(15 26 42)"/>
+  </g>
+</svg>

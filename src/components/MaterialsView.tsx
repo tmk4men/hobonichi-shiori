@@ -26,6 +26,12 @@ export default function MaterialsView() {
   };
   return (
     <div className="materials">
+      <img
+        className="materials-header"
+        src={`${import.meta.env.BASE_URL}illust/materials-header.svg`}
+        alt=""
+        aria-hidden="true"
+      />
       <section className="material-section">
         <h2 className="material-h">タグ（付箋）</h2>
         <p className="material-sub">1ページに 1つだけ。左上に そっと貼る。</p>
@@ -123,6 +129,7 @@ export default function MaterialsView() {
 
       <section className="material-section">
         <h2 className="material-h">アプリの アイコン</h2>
+        <p className="material-sub">2しゅるい。好みで えらべる。</p>
         <div className="material-icons">
           {(['a', 'b'] as IconChoice[]).map((c) => (
             <button
@@ -132,6 +139,23 @@ export default function MaterialsView() {
             >
               <img src={iconUrl(c)} alt="" />
             </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="material-section">
+        <h2 className="material-h">しるし</h2>
+        <p className="material-sub">節目に そっと 押される 印。</p>
+        <div className="material-stamps-special">
+          {[
+            { src: 'illust/stamp-kansei.svg', label: 'ノート完成' },
+            { src: 'illust/stamp-100days.svg', label: '百日きねん' },
+            { src: 'illust/stamp-birthday.svg', label: 'たんじょう' },
+          ].map((s) => (
+            <span key={s.src} className="material-stamp-special">
+              <img src={`${import.meta.env.BASE_URL}${s.src}`} alt="" />
+              <span className="material-stamp-meaning">{s.label}</span>
+            </span>
           ))}
         </div>
       </section>

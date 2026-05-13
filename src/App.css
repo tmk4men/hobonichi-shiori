@@ -373,6 +373,30 @@ textarea {
   position: relative;
   z-index: 1;
 }
+.shelf-deco {
+  position: absolute;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.28));
+}
+.shelf-deco-plant {
+  right: 4px;
+  width: 52px;
+  height: auto;
+}
+.shelf-deco-cup {
+  right: 56px;
+  width: 46px;
+  height: auto;
+  bottom: 4px;
+}
+.shelf-deco-clock {
+  left: 6px;
+  width: 44px;
+  height: auto;
+  bottom: 2px;
+}
 .spine {
   flex: 1;
   min-width: 0;
@@ -440,6 +464,18 @@ textarea {
   );
 }
 .spine-new .plus { font-size: 26px; line-height: 1; }
+.spine-new::after {
+  content: '';
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(8deg);
+  width: 14px;
+  height: 70px;
+  background: url('/illust/spine-pencil.svg') center / contain no-repeat;
+  opacity: 0.7;
+  pointer-events: none;
+}
 .spine-new .spine-newlabel {
   font-size: 11px;
   letter-spacing: 0.18em;
@@ -615,18 +651,35 @@ textarea {
 }
 .cover-swatch {
   padding: 14px 6px;
-  border-radius: 8px;
+  border-radius: 3px 7px 7px 3px;
   font-size: 14px;
-  opacity: 0.7;
+  opacity: 0.75;
   border: 2px solid transparent;
   font-family: var(--f-display);
   font-weight: 600;
   letter-spacing: 0.12em;
+  position: relative;
+  box-shadow:
+    inset 4px 0 0 rgba(0, 0, 0, 0.14),
+    inset 6px 0 0 rgba(255, 255, 255, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+.cover-swatch::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: 16%;
+  width: 5px;
+  height: 22px;
+  background: #c75959;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+  opacity: 0.85;
 }
 .cover-swatch.on {
   opacity: 1;
   border-color: var(--ink);
-  box-shadow: 0 0 0 1px var(--paper) inset;
+  transform: translateY(-2px);
 }
 .modal-actions {
   display: flex;
@@ -640,6 +693,14 @@ textarea {
 .confirm-dialog {
   max-width: 380px;
   padding: 28px 26px 22px;
+  background-image:
+    url('/illust/photo-corner.svg'),
+    url('/illust/photo-corner-tr.svg'),
+    url('/illust/photo-corner-bl.svg'),
+    url('/illust/photo-corner-br.svg');
+  background-size: 14px 14px;
+  background-position: top 6px left 6px, top 6px right 6px, bottom 6px left 6px, bottom 6px right 6px;
+  background-repeat: no-repeat;
 }
 .confirm-dialog h2 {
   font-size: 15px;
@@ -886,6 +947,17 @@ textarea {
 }
 .page-row:hover {
   background: rgba(255, 255, 255, 0.88);
+}
+.page-row.highlighted::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
+  background: url('/illust/dogear.svg') center / contain no-repeat;
+  filter: drop-shadow(-1px 1px 2px rgba(60, 40, 20, 0.18));
+  pointer-events: none;
 }
 .row-left,
 .row-right {
@@ -1359,6 +1431,29 @@ textarea {
 .page-num.left-num { left: 22px; }
 .page-num.right-num { right: 22px; }
 
+/* 月のミニカット */
+.month-cut {
+  position: absolute;
+  top: 8px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  pointer-events: none;
+  opacity: 0.92;
+  filter: drop-shadow(0 1px 0 rgba(60, 40, 20, 0.08));
+  z-index: 1;
+}
+.page-corner-deco {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+  opacity: 0.85;
+  z-index: 1;
+}
+
 /* 付箋 */
 .sticky-tag {
   position: absolute;
@@ -1497,6 +1592,20 @@ textarea {
   align-items: center;
   min-height: 36px;
   margin: -2px 0 10px;
+  position: relative;
+}
+.photo-caption-row::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 18%;
+  width: 64px;
+  height: 14px;
+  background: url('/illust/washi-tape.svg') center / 100% 100% no-repeat;
+  transform: rotate(-3deg);
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 1;
 }
 .photo-caption {
   width: 80%;
@@ -1680,6 +1789,41 @@ textarea {
   width: 1px;
   height: 100%;
   background: rgba(170, 60, 60, 0.18);
+}
+
+/* album frame: 写真コーナーシール */
+.frame-album {
+  padding: 12px;
+  background-color: #fffaea;
+  border-radius: 2px;
+  box-shadow: 0 4px 12px rgba(60, 40, 20, 0.18);
+  background-image:
+    url('/illust/photo-corner.svg'),
+    url('/illust/photo-corner-tr.svg'),
+    url('/illust/photo-corner-bl.svg'),
+    url('/illust/photo-corner-br.svg');
+  background-size: 18px 18px;
+  background-position: top left, top right, bottom left, bottom right;
+  background-repeat: no-repeat;
+}
+.frame-album img {
+  border-radius: 0;
+  display: block;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+/* サムネ */
+.frame-thumb.frame-album {
+  background: #fffaea;
+  padding: 4px;
+  border: 1px solid rgba(60, 40, 20, 0.12);
+  background-image:
+    url('/illust/photo-corner.svg'),
+    url('/illust/photo-corner-tr.svg'),
+    url('/illust/photo-corner-bl.svg'),
+    url('/illust/photo-corner-br.svg');
+  background-size: 8px 8px;
+  background-position: top left, top right, bottom left, bottom right;
+  background-repeat: no-repeat;
 }
 
 /* frame thumbs */
@@ -2107,15 +2251,14 @@ textarea {
 }
 .bm-ribbon {
   position: absolute;
-  top: -2px;
+  top: -4px;
   right: 28px;
-  width: 18px;
-  height: 56px;
-  background: #c97c6d;
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.1) 0%, transparent 30%);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
-  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-  z-index: 1;
+  width: 26px;
+  height: 84px;
+  background: url('/illust/bookmark-tassel.svg') center top / contain no-repeat;
+  filter: drop-shadow(1px 2px 3px rgba(0, 0, 0, 0.22));
+  z-index: 2;
+  pointer-events: none;
 }
 .bm-header {
   display: block;
@@ -2384,6 +2527,19 @@ textarea {
   margin: 0 auto 12px;
   display: block;
   box-shadow: 0 6px 18px rgba(60, 40, 20, 0.25);
+  position: relative;
+}
+.lock-ribbon {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 84%;
+  max-width: 280px;
+  height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgba(60, 20, 20, 0.18));
+  z-index: 1;
 }
 .lock-card h1 {
   font-family: var(--f-display);
@@ -2467,12 +2623,28 @@ textarea {
   border-radius: inherit;
 }
 .welcome-icon {
-  width: 110px;
-  height: 110px;
+  width: 76px;
+  height: 76px;
   object-fit: cover;
-  border-radius: 22px;
-  margin-bottom: 16px;
+  border-radius: 16px;
+  margin-bottom: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  position: relative;
+}
+.welcome-hero {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin: 0 auto 6px;
+  filter: drop-shadow(0 4px 10px rgba(60, 40, 20, 0.18));
+  position: relative;
+}
+.welcome-intro .welcome-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  margin-bottom: 8px;
 }
 .welcome-step h1 {
   font-family: var(--f-display);
@@ -2604,6 +2776,15 @@ textarea {
   position: relative;
   z-index: 1;
 }
+.materials-header {
+  display: block;
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  margin: 4px auto -8px;
+  opacity: 0.96;
+  filter: drop-shadow(0 3px 6px rgba(60, 40, 20, 0.12));
+}
 .material-section {
   margin: 20px 0 28px;
 }
@@ -2622,6 +2803,24 @@ textarea {
   opacity: 0.6;
   margin: 0 0 14px;
   padding-left: 13px;
+  position: relative;
+}
+.material-sub::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 10px;
+  margin: 6px 0 0;
+  background: url('/illust/divider-wave.svg') left center / 200px 10px repeat-x;
+  opacity: 0.6;
+}
+.section-divider {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: 12px;
+  margin: 2px auto 14px;
+  opacity: 0.8;
 }
 .material-tags {
   display: flex;
@@ -2784,6 +2983,24 @@ textarea {
   letter-spacing: 0.08em;
 }
 
+.material-stamps-special {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 6px 4px 0;
+}
+.material-stamp-special {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 80px;
+}
+.material-stamp-special img {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(1px 1px 0 rgba(60, 30, 20, 0.08));
+}
 .material-icons {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2929,6 +3146,16 @@ textarea {
 }
 .capture-page.capture-left {
   border-right: 1px dashed rgba(60, 40, 20, 0.12);
+  position: relative;
+}
+.cap-month-cut {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 80px;
+  height: 80px;
+  opacity: 0.92;
+  pointer-events: none;
 }
 .cap-tag {
   align-self: flex-start;
