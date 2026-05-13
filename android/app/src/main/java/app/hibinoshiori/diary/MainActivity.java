@@ -1,4 +1,4 @@
-package app.hobonichi.shiori;
+package app.hibinoshiori.diary;
 
 import com.getcapacitor.BridgeActivity;
 

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">ほぼ日のしおり</string>
-    <string name="title_activity_main">ほぼ日のしおり</string>
-    <string name="package_name">app.hobonichi.shiori</string>
-    <string name="custom_url_scheme">app.hobonichi.shiori</string>
+    <string name="app_name">ひびのしおり</string>
+    <string name="title_activity_main">ひびのしおり</string>
+    <string name="package_name">app.hibinoshiori.diary</string>
+    <string name="custom_url_scheme">app.hibinoshiori.diary</string>
 </resources>

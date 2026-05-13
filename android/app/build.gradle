@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "app.hobonichi.shiori"
+    namespace = "app.hibinoshiori.diary"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "app.hobonichi.shiori"
+        applicationId "app.hibinoshiori.diary"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
