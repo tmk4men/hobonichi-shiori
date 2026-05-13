@@ -34,38 +34,6 @@ body[data-write-font='kaisei'] {
   --f-write: 'Kaisei Decol', 'Shippori Mincho B1', serif;
 }
 
-/* ホーム画面の背景写真 */
-body[data-bg='home'] {
-  background: #c8baa0;
-  background-image:
-    linear-gradient(to bottom, rgba(246, 240, 221, 0.0) 0%, rgba(200, 186, 160, 0.18) 100%),
-    url('/home-bg.webp');
-  background-size: cover;
-  background-position: center top;
-  background-attachment: fixed;
-}
-body[data-bg='home'] #root {
-  background: rgba(246, 240, 221, 0.78);
-  backdrop-filter: blur(2px);
-}
-body[data-bg='home'] #root::before {
-  opacity: 0.09;
-}
-@media (min-width: 760px) {
-  /* PCなど画面が広いとき、両端に観葉植物背景が見える */
-  body[data-bg='home'] #root {
-    background: rgba(246, 240, 221, 0.86);
-  }
-}
-body[data-bg='home'][data-theme='dark'] {
-  background-image:
-    linear-gradient(to bottom, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.55)),
-    url('/home-bg.webp');
-}
-body[data-bg='home'][data-theme='dark'] #root {
-  background: rgba(42, 37, 32, 0.82);
-}
-
 /* ダークモード（燈火） */
 body[data-theme='dark'] {
   color-scheme: dark;
@@ -402,6 +370,17 @@ textarea {
   padding-bottom: 60px;
   position: relative;
   z-index: 1;
+  background-image:
+    linear-gradient(to bottom, rgba(246, 240, 221, 0.32) 0%, rgba(246, 240, 221, 0.18) 40%, rgba(246, 240, 221, 0.55) 100%),
+    url('/home-bg.webp');
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed;
+}
+body[data-theme='dark'] .shelf {
+  background-image:
+    linear-gradient(to bottom, rgba(26, 22, 16, 0.55) 0%, rgba(26, 22, 16, 0.4) 40%, rgba(26, 22, 16, 0.7) 100%),
+    url('/home-bg.webp');
 }
 .shelf-hint {
   text-align: center;
