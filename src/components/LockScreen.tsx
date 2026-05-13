@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { verifyPassword } from '../auth';
 import { iconUrl, loadIconChoice } from '../iconChoice';
 import { playUnlock, unlockAudio } from '../sfx';
+import { hapticError, hapticSuccess, hapticTap } from '../haptics';
 
 interface Props {
   onUnlock: () => void;
@@ -15,6 +16,7 @@ export default function LockScreen({ onUnlock }: Props) {
 
   const press = (d: string) => {
     unlockAudio();
+    hapticTap();
     setError('');
     setPin((c) => (c.length < 4 ? c + d : c));
   };
@@ -33,8 +35,10 @@ export default function LockScreen({ onUnlock }: Props) {
       setBusy(false);
       if (ok) {
         playUnlock();
+        hapticSuccess();
         onUnlock();
       } else {
+        hapticError();
         setError('ちがいます。');
         setTimeout(() => !cancelled && setPin(''), 350);
       }

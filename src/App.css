@@ -6,6 +6,7 @@
   --ink-soft: #6b5a45;
   --rule: rgba(60, 40, 20, 0.16);
   --rule-soft: rgba(60, 40, 20, 0.08);
+  --text-scale: 1;
 
   /* font system */
   --f-display: 'Shippori Mincho B1', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
@@ -32,6 +33,51 @@ body[data-write-font='hachimaru'] {
 body[data-write-font='kaisei'] {
   --f-write: 'Kaisei Decol', 'Shippori Mincho B1', serif;
 }
+
+/* ダークモード（燈火） */
+body[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #2a2520;
+  --paper-deep: #1e1a16;
+  --ink: #ede2c4;
+  --ink-soft: #c9b896;
+  --rule: rgba(237, 226, 196, 0.18);
+  --rule-soft: rgba(237, 226, 196, 0.08);
+}
+body[data-theme='dark'] {
+  background: #1a1610;
+  background-image:
+    radial-gradient(ellipse at top, rgba(255, 200, 120, 0.06), transparent 60%),
+    url('/paper.svg');
+}
+body[data-theme='dark'] #root {
+  background: var(--paper);
+  background-image:
+    linear-gradient(to bottom, rgba(255, 200, 120, 0.03), transparent 200px),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 48px,
+      rgba(237, 226, 196, 0.012) 49px
+    );
+  box-shadow:
+    0 0 1px rgba(0, 0, 0, 0.4),
+    -1px 0 24px rgba(0, 0, 0, 0.4),
+    1px 0 24px rgba(0, 0, 0, 0.4);
+}
+body[data-theme='dark'] #root::before {
+  opacity: 0.08;
+}
+body[data-theme='dark'] .appbar {
+  background: rgba(42, 37, 32, 0.78);
+  border-bottom-color: rgba(237, 226, 196, 0.08);
+}
+
+/* 文字サイズ */
+body[data-text-scale='small'] { --text-scale: 0.92; }
+body[data-text-scale='medium'] { --text-scale: 1; }
+body[data-text-scale='large'] { --text-scale: 1.12; }
+body { font-size: calc(15px * var(--text-scale)); }
 * {
   box-sizing: border-box;
 }
@@ -750,6 +796,35 @@ textarea {
   grid-template-columns: 1fr 1fr;
   gap: 6px;
 }
+.seg:has(.seg-btn:nth-child(3)) {
+  grid-template-columns: repeat(3, 1fr);
+}
+.toggle-btn {
+  width: 50px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.18);
+  position: relative;
+  transition: background 0.18s ease;
+  border: none;
+}
+.toggle-btn.on {
+  background: var(--ink);
+}
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.18s ease;
+}
+.toggle-btn.on .toggle-knob {
+  transform: translateX(22px);
+}
 .seg-btn {
   padding: 10px;
   border-radius: 8px;
@@ -930,6 +1005,204 @@ textarea {
   flex-direction: column;
   gap: 8px;
 }
+/* リマインダー（むかしのきょう） */
+.reminder-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 30;
+  width: min(92%, 420px);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 14px 40px 14px 18px;
+  box-shadow:
+    0 14px 36px rgba(40, 25, 10, 0.36),
+    0 0 0 1px rgba(60, 40, 20, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  animation: rise 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.reminder-eyebrow {
+  font-family: var(--f-display);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: #b94a4a;
+  opacity: 0.9;
+}
+.reminder-body {
+  font-family: var(--f-hand);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+.reminder-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.55;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+/* ノートビュー ツールバー（検索/タグ/タブ） */
+.nb-toolbar {
+  padding: 8px 16px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+.nb-view-tabs {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.nb-view-tab {
+  font-family: var(--f-display);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--ink-soft);
+}
+.nb-view-tab.on {
+  background: var(--ink);
+  color: var(--paper);
+}
+.nb-search {
+  width: 100%;
+  border: none;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-family: var(--f-body);
+  border-bottom: 1px dashed rgba(60, 40, 20, 0.18);
+  outline: none;
+}
+.nb-search:focus {
+  background: rgba(255, 255, 255, 0.85);
+}
+body[data-theme='dark'] .nb-search {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+}
+.nb-tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.nb-tag-chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--ink-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.nb-tag-chip.on {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* カレンダー */
+.nb-calendar-wrap { padding-bottom: 24px; }
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 4px 10px;
+}
+.cal-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  font-size: 18px;
+  color: var(--ink);
+}
+.cal-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--f-display);
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.cal-month-cut {
+  width: 26px;
+  height: 26px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.cal-wlabel {
+  font-family: var(--f-display);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-align: center;
+  opacity: 0.6;
+  padding: 4px 0 2px;
+}
+.cal-cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.32);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 4px 0 0 6px;
+  font-family: var(--f-num);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.cal-cell.empty {
+  background: transparent;
+}
+.cal-cell.written {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
+  font-weight: 700;
+}
+body[data-theme='dark'] .cal-cell { background: rgba(255, 255, 255, 0.04); }
+body[data-theme='dark'] .cal-cell.written { background: rgba(255, 255, 255, 0.12); }
+.cal-cell.today {
+  box-shadow: 0 0 0 1.5px var(--ink);
+}
+.cal-cell.star::before {
+  content: '★';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 10px;
+  color: #c95959;
+}
+.cal-dot {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
 .page-row {
   width: 100%;
   text-align: left;

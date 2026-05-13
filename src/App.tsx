@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
-import type { AppData } from './types';
-import { ensureTodayPage, loadData, saveData } from './storage';
+import { useEffect, useMemo, useState } from 'react';
+import type { AppData, Page } from './types';
+import { ensureTodayPage, loadData, saveData, todayStr } from './storage';
 import { loadLock } from './auth';
 import { applyWriteFont } from './writeFont';
+import { applyTextScale, applyTheme } from './theme';
 import Shelf from './components/Shelf';
 import NotebookView from './components/NotebookView';
 import PageEditor from './components/PageEditor';
@@ -29,6 +30,39 @@ export default function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [hasPassword, setHasPassword] = useState<boolean>(() => !!loadLock());
   const [unlocked, setUnlocked] = useState<boolean>(() => !loadLock());
+  const [reminderDismissed, setReminderDismissed] = useState(false);
+
+  // 「○年前のきょう」 同じMM-DDの過去ページを最新→古い順に
+  const onThisDay = useMemo<Page[]>(() => {
+    const today = todayStr();
+    const mmdd = today.slice(5);
+    return data.pages
+      .filter((p) => p.date.slice(5) === mmdd && p.date < today)
+      .sort((a, b) => b.date.localeCompare(a.date));
+  }, [data.pages]);
+
+  // 日付ごとに1回だけ表示
+  useEffect(() => {
+    if (onThisDay.length === 0) {
+      setReminderDismissed(true);
+      return;
+    }
+    try {
+      const seen = localStorage.getItem('hobonichi.reminderSeen');
+      if (seen === todayStr()) setReminderDismissed(true);
+    } catch {
+      /* noop */
+    }
+  }, [onThisDay.length]);
+
+  const dismissReminder = () => {
+    setReminderDismissed(true);
+    try {
+      localStorage.setItem('hobonichi.reminderSeen', todayStr());
+    } catch {
+      /* noop */
+    }
+  };
 
   useEffect(() => {
     saveData(data);
@@ -36,6 +70,8 @@ export default function App() {
 
   useEffect(() => {
     applyWriteFont();
+    applyTheme();
+    applyTextScale();
   }, []);
 
   if (!unlocked) {
@@ -123,9 +159,42 @@ export default function App() {
     );
   };
 
+  const showReminder =
+    !reminderDismissed && onThisDay.length > 0 && screen.kind === 'shelf';
+  const recentReminder = onThisDay[0];
+  const yearsAgo = recentReminder
+    ? new Date().getFullYear() - Number(recentReminder.date.slice(0, 4))
+    : 0;
+
   return (
     <>
       {screenEl()}
+      {showReminder && recentReminder && (
+        <button
+          className="reminder-toast"
+          onClick={() => {
+            dismissReminder();
+            goPage(recentReminder.notebookId, recentReminder.id);
+          }}
+        >
+          <span className="reminder-eyebrow">
+            {yearsAgo > 0 ? `${yearsAgo}年前の きょう` : 'むかしの きょう'}
+          </span>
+          <span className="reminder-body">
+            {recentReminder.text.slice(0, 28) || '（白紙のページ）'}
+          </span>
+          <span
+            className="reminder-close"
+            onClick={(e) => {
+              e.stopPropagation();
+              dismissReminder();
+            }}
+            aria-label="閉じる"
+          >
+            ×
+          </span>
+        </button>
+      )}
       {showMenu && (
         <Menu
           hasPassword={hasPassword}

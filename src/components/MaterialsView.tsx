@@ -4,11 +4,39 @@ import type { IconChoice } from '../iconChoice';
 import { iconUrl, loadIconChoice, saveIconChoice } from '../iconChoice';
 import type { WriteFont } from '../writeFont';
 import { WRITE_FONT_DEF, applyWriteFont, loadWriteFont, saveWriteFont } from '../writeFont';
+import type { TextScale, Theme } from '../theme';
+import {
+  applyTextScale,
+  applyTheme,
+  loadTextScale,
+  loadTheme,
+  saveTextScale,
+  saveTheme,
+} from '../theme';
+import { isHapticsEnabled, setHapticsEnabled } from '../haptics';
 import Emoji from './Emoji';
 
 export default function MaterialsView() {
   const [icon, setIcon] = useState<IconChoice>(loadIconChoice());
   const [writeFont, setWriteFont] = useState<WriteFont>(loadWriteFont());
+  const [theme, setThemeState] = useState<Theme>(loadTheme());
+  const [textScale, setTextScaleState] = useState<TextScale>(loadTextScale());
+  const [haptics, setHaptics] = useState<boolean>(isHapticsEnabled());
+  const pickTheme = (t: Theme) => {
+    setThemeState(t);
+    saveTheme(t);
+    applyTheme(t);
+  };
+  const pickTextScale = (s: TextScale) => {
+    setTextScaleState(s);
+    saveTextScale(s);
+    applyTextScale(s);
+  };
+  const toggleHaptics = () => {
+    const next = !haptics;
+    setHaptics(next);
+    setHapticsEnabled(next);
+  };
   const pickIcon = (c: IconChoice) => {
     setIcon(c);
     saveIconChoice(c);
@@ -157,6 +185,61 @@ export default function MaterialsView() {
               <span className="material-stamp-meaning">{s.label}</span>
             </span>
           ))}
+        </div>
+      </section>
+
+      <section className="material-section">
+        <h2 className="material-h">見え方</h2>
+        <p className="material-sub">あかり / 文字の大きさ。</p>
+        <div className="field">
+          <span>あかり</span>
+          <div className="seg">
+            <button
+              className={`seg-btn${theme === 'light' ? ' on' : ''}`}
+              onClick={() => pickTheme('light')}
+            >
+              ひかり
+            </button>
+            <button
+              className={`seg-btn${theme === 'dark' ? ' on' : ''}`}
+              onClick={() => pickTheme('dark')}
+            >
+              ともしび
+            </button>
+          </div>
+        </div>
+        <div className="field">
+          <span>文字の 大きさ</span>
+          <div className="seg">
+            <button
+              className={`seg-btn${textScale === 'small' ? ' on' : ''}`}
+              onClick={() => pickTextScale('small')}
+            >
+              ちいさい
+            </button>
+            <button
+              className={`seg-btn${textScale === 'medium' ? ' on' : ''}`}
+              onClick={() => pickTextScale('medium')}
+            >
+              ふつう
+            </button>
+            <button
+              className={`seg-btn${textScale === 'large' ? ' on' : ''}`}
+              onClick={() => pickTextScale('large')}
+            >
+              おおきい
+            </button>
+          </div>
+        </div>
+        <div className="field">
+          <span>振動</span>
+          <button
+            className={`toggle-btn${haptics ? ' on' : ''}`}
+            onClick={toggleHaptics}
+            aria-pressed={haptics}
+          >
+            <span className="toggle-knob" />
+          </button>
         </div>
       </section>
     </div>

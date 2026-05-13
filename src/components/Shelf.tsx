@@ -11,6 +11,7 @@ import {
 } from '../storage';
 import Emoji from './Emoji';
 import MaterialsView from './MaterialsView';
+import { hapticImpact, hapticTap } from '../haptics';
 
 const MAX_NOTEBOOKS_FREE = 2;
 
@@ -125,7 +126,7 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
         return (
           <button
             className={`bookmark-big${photo ? ' has-photo' : ''}`}
-            onClick={() => onOpenPage(p.notebookId, p.id)}
+            onClick={() => { hapticTap(); onOpenPage(p.notebookId, p.id); }}
             style={theme ? { ['--bm-cover' as string]: theme.bg } : undefined}
           >
             <span className="bm-ribbon" />
@@ -192,7 +193,7 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
                           color: t.ink,
                           transform: `rotate(${tilt}deg)`,
                         }}
-                        onClick={() => onOpen(nb.id)}
+                        onClick={() => { hapticImpact(); onOpen(nb.id); }}
                       >
                         <span className="spine-band band-top" />
                         <span className="spine-title">{nb.title}</span>

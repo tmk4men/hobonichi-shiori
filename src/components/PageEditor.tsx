@@ -14,6 +14,7 @@ import {
 import Emoji from './Emoji';
 import ConfirmDialog from './ConfirmDialog';
 import { playBookOpen, playPageFlip, playStamp, playWrite, unlockAudio } from '../sfx';
+import { hapticImpact, hapticTap } from '../haptics';
 import type { WriteFont } from '../writeFont';
 import { WRITE_FONT_DEF, applyWriteFont, isFreeFont, loadWriteFont, saveWriteFont } from '../writeFont';
 
@@ -171,7 +172,10 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     setShowTagPick(false);
   };
   const setStamp = (s: Stamp | undefined) => {
-    if (s) playStamp();
+    if (s) {
+      playStamp();
+      hapticImpact();
+    }
     patch({ stamp: s });
     setShowStampPick(false);
   };
@@ -307,6 +311,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     if (side === 'left') {
       unlockAudio();
       playPageFlip();
+      hapticTap();
       setFlipDir('next');
       setTimeout(() => setSide('right'), 260);
       setTimeout(() => setFlipDir('none'), 540);
@@ -315,6 +320,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     if (nextPage) {
       unlockAudio();
       playPageFlip();
+      hapticTap();
       setFlipDir('next');
       setTimeout(() => {
         setSide('left');
@@ -327,6 +333,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     if (side === 'right') {
       unlockAudio();
       playPageFlip();
+      hapticTap();
       setFlipDir('prev');
       setTimeout(() => setSide('left'), 260);
       setTimeout(() => setFlipDir('none'), 540);
@@ -335,6 +342,7 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
     if (prevPage) {
       unlockAudio();
       playPageFlip();
+      hapticTap();
       setFlipDir('prev');
       setTimeout(() => {
         setSide('right');
