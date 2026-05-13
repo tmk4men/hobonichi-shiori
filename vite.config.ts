@@ -10,7 +10,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'sfx/page-flip.mp3'],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,mp3,woff2}'],
+      },
       manifest: {
         name: 'ひびのしおり',
         short_name: 'しおり',

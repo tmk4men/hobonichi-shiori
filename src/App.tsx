@@ -10,6 +10,7 @@ import PageEditor from './components/PageEditor';
 import HighlightsView from './components/HighlightsView';
 import NotebookManager from './components/NotebookManager';
 import Menu from './components/Menu';
+import CreditsSheet from './components/CreditsSheet';
 import PasswordSheet from './components/PasswordSheet';
 import LockScreen from './components/LockScreen';
 import Welcome from './components/Welcome';
@@ -28,6 +29,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>({ kind: 'shelf' });
   const [showMenu, setShowMenu] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showCredits, setShowCredits] = useState(false);
   const [hasPassword, setHasPassword] = useState<boolean>(() => !!loadLock());
   const [unlocked, setUnlocked] = useState<boolean>(() => !loadLock());
   const [reminderDismissed, setReminderDismissed] = useState(false);
@@ -202,6 +204,7 @@ export default function App() {
           onShowHighlights={() => setScreen({ kind: 'highlights' })}
           onShowNotebookManager={() => setScreen({ kind: 'manager' })}
           onShowPassword={() => setShowPassword(true)}
+          onShowCredits={() => setShowCredits(true)}
         />
       )}
       {showPassword && (
@@ -210,6 +213,7 @@ export default function App() {
           onChanged={() => setHasPassword(!!loadLock())}
         />
       )}
+      {showCredits && <CreditsSheet onClose={() => setShowCredits(false)} />}
     </>
   );
 }

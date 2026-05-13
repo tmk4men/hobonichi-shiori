@@ -7,6 +7,7 @@ interface Props {
   onShowHighlights: () => void;
   onShowNotebookManager: () => void;
   onShowPassword: () => void;
+  onShowCredits: () => void;
 }
 
 export default function Menu({
@@ -15,6 +16,7 @@ export default function Menu({
   onShowHighlights,
   onShowNotebookManager,
   onShowPassword,
+  onShowCredits,
 }: Props) {
   const [muted, setMutedState] = useState(isMuted());
   const toggleSound = () => {
@@ -75,6 +77,19 @@ export default function Menu({
               <span className="menu-mark">♪</span>
               <span className="menu-label">音 ({muted ? 'オフ' : 'オン'})</span>
               <span className="menu-sub">紙の音、ペン先、スタンプの音。</span>
+            </button>
+          </li>
+          <li>
+            <button
+              className="menu-item"
+              onClick={() => {
+                onClose();
+                onShowCredits();
+              }}
+            >
+              <span className="menu-mark">©</span>
+              <span className="menu-label">クレジット</span>
+              <span className="menu-sub">音や フォントの ありがとう。</span>
             </button>
           </li>
         </ul>

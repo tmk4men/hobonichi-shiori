@@ -1005,6 +1005,43 @@ textarea {
   flex-direction: column;
   gap: 8px;
 }
+/* クレジット */
+.credits-sheet h3 { margin-bottom: 12px; }
+.credits-section {
+  padding: 8px 4px 12px;
+  border-bottom: 1px dashed rgba(60, 40, 20, 0.14);
+}
+.credits-section:last-of-type { border-bottom: none; }
+.credits-h {
+  font-family: var(--f-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  margin: 0 0 6px;
+  opacity: 0.7;
+}
+.credits-line {
+  margin: 0;
+  font-family: var(--f-body);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.credits-name {
+  font-family: var(--f-hand);
+  margin-left: 6px;
+  padding: 1px 8px;
+  background: rgba(60, 40, 20, 0.06);
+  border-radius: 999px;
+  font-size: 12px;
+}
+.credits-sub {
+  margin: 4px 0 0;
+  font-family: var(--f-hand);
+  font-size: 11px;
+  opacity: 0.6;
+  line-height: 1.7;
+}
+
 /* リマインダー（むかしのきょう） */
 .reminder-toast {
   position: fixed;

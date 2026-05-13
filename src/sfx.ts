@@ -62,10 +62,49 @@ function playNoise(c: AudioContext, dur: number, decay: number, hpf: number, gai
   src.start();
 }
 
+// 紙めくり音（録音版・タダノオト）
+let _pageFlipBuf: AudioBuffer | null = null;
+let _pageFlipLoading = false;
+
+async function loadPageFlipBuffer(c: AudioContext): Promise<AudioBuffer | null> {
+  if (_pageFlipBuf) return _pageFlipBuf;
+  if (_pageFlipLoading) return null;
+  _pageFlipLoading = true;
+  try {
+    const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
+    const res = await fetch(`${base}sfx/page-flip.mp3`);
+    if (!res.ok) throw new Error(`fetch failed: ${res.status}`);
+    const arr = await res.arrayBuffer();
+    _pageFlipBuf = await c.decodeAudioData(arr.slice(0));
+    return _pageFlipBuf;
+  } catch {
+    return null;
+  } finally {
+    _pageFlipLoading = false;
+  }
+}
+
 export function playPageFlip(): void {
   const c = ctx();
   if (!c) return;
-  // 紙をスッと滑らせる音（短いノイズバースト＋ハイパス）
+  // 録音音源を再生（読み込み中は合成音で代替）
+  loadPageFlipBuffer(c).then((buf) => {
+    if (!buf) return;
+  });
+  if (_pageFlipBuf) {
+    const src = c.createBufferSource();
+    src.buffer = _pageFlipBuf;
+    const g = c.createGain();
+    g.gain.value = 0.6;
+    src.connect(g).connect(c.destination);
+    try {
+      src.start();
+    } catch {
+      /* noop */
+    }
+    return;
+  }
+  // フォールバック（録音未ロード時の合成音）
   playNoise(c, 0.18, 4, 2400, 0.22);
 }
 
