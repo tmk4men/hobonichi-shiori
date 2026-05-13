@@ -76,6 +76,15 @@ export default function App() {
     applyTextScale();
   }, []);
 
+  useEffect(() => {
+    // ホーム画面（本棚）でだけ背景写真を出す
+    if (screen.kind === 'shelf') {
+      document.body.dataset.bg = 'home';
+    } else {
+      delete document.body.dataset.bg;
+    }
+  }, [screen.kind]);
+
   if (!unlocked) {
     return <LockScreen onUnlock={() => setUnlocked(true)} />;
   }
