@@ -370,14 +370,21 @@ textarea {
   padding-bottom: 60px;
   position: relative;
   z-index: 1;
+}
+.shelf::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
   background-image:
     linear-gradient(to bottom, rgba(246, 240, 221, 0.32) 0%, rgba(246, 240, 221, 0.18) 40%, rgba(246, 240, 221, 0.55) 100%),
     url('/home-bg.webp');
   background-size: cover;
   background-position: center top;
-  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
-body[data-theme='dark'] .shelf {
+body[data-theme='dark'] .shelf::before {
   background-image:
     linear-gradient(to bottom, rgba(26, 22, 16, 0.55) 0%, rgba(26, 22, 16, 0.4) 40%, rgba(26, 22, 16, 0.7) 100%),
     url('/home-bg.webp');
