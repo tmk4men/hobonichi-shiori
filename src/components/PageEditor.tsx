@@ -16,7 +16,8 @@ import ConfirmDialog from './ConfirmDialog';
 import { playBookOpen, playPageFlip, playStamp, playWrite, unlockAudio } from '../sfx';
 import { hapticImpact, hapticTap } from '../haptics';
 import type { WriteFont } from '../writeFont';
-import { WRITE_FONT_DEF, applyWriteFont, isFreeFont, loadWriteFont, saveWriteFont } from '../writeFont';
+import { WRITE_FONT_DEF, applyWriteFont, isFontUsable, loadWriteFont, saveWriteFont } from '../writeFont';
+import { usePremium } from '../premium';
 
 interface Props {
   data: AppData;
@@ -65,9 +66,10 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
   const [showPageMenu, setShowPageMenu] = useState(false);
   const [showFontPick, setShowFontPick] = useState(false);
   const [writeFont, setWriteFontState] = useState<WriteFont>(loadWriteFont());
+  const premium = usePremium();
 
   const pickFont = (f: WriteFont) => {
-    if (!isFreeFont(f)) return; // ロック中は選べない
+    if (!isFontUsable(f)) return; // 未解放は選べない
     saveWriteFont(f);
     applyWriteFont(f);
     setWriteFontState(f);
@@ -784,23 +786,26 @@ export default function PageEditor({ data, pageId, onBack, onOpenPage, onChange 
           <div className="sheet" onClick={(e) => e.stopPropagation()}>
             <h3>書きごこちの フォント</h3>
             <div className="font-pick">
-              {WRITE_FONT_DEF.map((f) => (
-                <button
-                  key={f.key}
-                  className={`font-opt${writeFont === f.key ? ' on' : ''}${f.locked ? ' locked' : ''}`}
-                  onClick={() => pickFont(f.key)}
-                  disabled={f.locked}
-                  style={{ fontFamily: f.cssFamily }}
-                >
-                  <span className="font-name">
-                    {f.label}
-                    {f.locked && <small className="locked-mark">　🔒</small>}
-                  </span>
-                  <span className="font-sample" style={{ fontFamily: f.cssFamily }}>
-                    {f.sample}
-                  </span>
-                </button>
-              ))}
+              {WRITE_FONT_DEF.map((f) => {
+                const showLock = f.locked && !premium;
+                return (
+                  <button
+                    key={f.key}
+                    className={`font-opt${writeFont === f.key ? ' on' : ''}${showLock ? ' locked' : ''}`}
+                    onClick={() => pickFont(f.key)}
+                    disabled={showLock}
+                    style={{ fontFamily: f.cssFamily }}
+                  >
+                    <span className="font-name">
+                      {f.label}
+                      {showLock && <small className="locked-mark">　🔒</small>}
+                    </span>
+                    <span className="font-sample" style={{ fontFamily: f.cssFamily }}>
+                      {f.sample}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

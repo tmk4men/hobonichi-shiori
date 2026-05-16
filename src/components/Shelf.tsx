@@ -12,8 +12,10 @@ import {
 import Emoji from './Emoji';
 import MaterialsView from './MaterialsView';
 import { hapticImpact, hapticTap } from '../haptics';
+import { usePremium } from '../premium';
 
 const MAX_NOTEBOOKS_FREE = 2;
+const MAX_NOTEBOOKS_PREMIUM = 24;
 
 interface Props {
   data: AppData;
@@ -30,7 +32,9 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState('');
   const [cover, setCover] = useState<CoverTheme>('beige');
-  const atLimit = data.notebooks.length >= MAX_NOTEBOOKS_FREE;
+  const premium = usePremium();
+  const notebookLimit = premium ? MAX_NOTEBOOKS_PREMIUM : MAX_NOTEBOOKS_FREE;
+  const atLimit = data.notebooks.length >= notebookLimit;
 
   // 左右スワイプでタブ切替
   const touch = useRef<{ x: number; y: number } | null>(null);
@@ -213,7 +217,7 @@ export default function Shelf({ data, onOpen, onChange, onShowHighlights: _onSho
                       <span className="spine-newlabel">
                         いまは
                         <br />
-                        {MAX_NOTEBOOKS_FREE}冊まで
+                        {notebookLimit}冊まで
                       </span>
                     </div>
                   )}

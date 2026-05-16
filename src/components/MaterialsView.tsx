@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { COVER_THEMES, FRAME_DEF, STAMP_DEF, TAG_DEF } from '../types';
 import type { IconChoice } from '../iconChoice';
 import { iconUrl, loadIconChoice, saveIconChoice } from '../iconChoice';
@@ -15,6 +15,14 @@ import {
 } from '../theme';
 import { isHapticsEnabled, setHapticsEnabled } from '../haptics';
 import Emoji from './Emoji';
+import {
+  fetchProductInfo,
+  purchasePremium,
+  restorePremium,
+  usePremium,
+  type PremiumProductInfo,
+} from '../premium';
+import { setBannerVisible } from '../ads';
 
 export default function MaterialsView() {
   const [icon, setIcon] = useState<IconChoice>(loadIconChoice());
@@ -22,6 +30,61 @@ export default function MaterialsView() {
   const [theme, setThemeState] = useState<Theme>(loadTheme());
   const [textScale, setTextScaleState] = useState<TextScale>(loadTextScale());
   const [haptics, setHaptics] = useState<boolean>(isHapticsEnabled());
+  const premium = usePremium();
+  const [product, setProduct] = useState<PremiumProductInfo | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const [purchaseMsg, setPurchaseMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (premium) return;
+    let alive = true;
+    fetchProductInfo().then((p) => {
+      if (alive) setProduct(p);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [premium]);
+
+  useEffect(() => {
+    setBannerVisible(true);
+    return () => {
+      setBannerVisible(false);
+    };
+  }, []);
+
+  const flashPurchaseMsg = (m: string) => {
+    setPurchaseMsg(m);
+    window.setTimeout(() => setPurchaseMsg((cur) => (cur === m ? null : cur)), 3500);
+  };
+
+  const onPurchase = async () => {
+    if (purchasing) return;
+    setPurchasing(true);
+    const r = await purchasePremium();
+    setPurchasing(false);
+    if (r.ok) {
+      flashPurchaseMsg('ありがとう。すべての書体と たっぷりのページが ひらきました。');
+    } else if (r.reason === 'cancelled') {
+      // 静かに何も出さない
+    } else {
+      flashPurchaseMsg(r.message ?? '購入できませんでした。');
+    }
+  };
+
+  const onRestore = async () => {
+    if (restoring) return;
+    setRestoring(true);
+    const r = await restorePremium();
+    setRestoring(false);
+    if (r.ok) {
+      flashPurchaseMsg('購入を復元しました。ありがとう。');
+    } else {
+      flashPurchaseMsg(r.message ?? '復元できませんでした。');
+    }
+  };
+
   const pickTheme = (t: Theme) => {
     setThemeState(t);
     saveTheme(t);
@@ -43,8 +106,8 @@ export default function MaterialsView() {
   };
   const [lockedNotice, setLockedNotice] = useState<string | null>(null);
   const pickWriteFont = (f: WriteFont, locked?: boolean) => {
-    if (locked) {
-      setLockedNotice('まだ ひらかれていない 書体です。');
+    if (locked && !premium) {
+      setLockedNotice('「しおり ぷらす」を ひらくと 使えます。');
       window.setTimeout(() => setLockedNotice(null), 2200);
       return;
     }
@@ -53,7 +116,7 @@ export default function MaterialsView() {
     applyWriteFont(f);
   };
   return (
-    <div className="materials">
+    <div className={`materials${premium ? ' is-premium' : ''}`}>
       <img
         className="materials-header"
         src={`${import.meta.env.BASE_URL}illust/materials-header.svg`}
@@ -125,21 +188,24 @@ export default function MaterialsView() {
         <h2 className="material-h">本文の 書体</h2>
         <p className="material-sub">ノートで 書くときの ペンを 選ぶ。</p>
         <div className="material-fonts">
-          {WRITE_FONT_DEF.map((f) => (
-            <button
-              key={f.key}
-              className={`material-font${writeFont === f.key ? ' on' : ''}${f.locked ? ' locked' : ''}`}
-              onClick={() => pickWriteFont(f.key, f.locked)}
-            >
-              <span className="material-font-name">
-                {f.locked && <span className="material-lock" aria-hidden="true">⌷</span>}
-                {f.label}
-              </span>
-              <span className="material-font-sample" style={{ fontFamily: f.cssFamily }}>
-                {f.sample}
-              </span>
-            </button>
-          ))}
+          {WRITE_FONT_DEF.map((f) => {
+            const showLock = f.locked && !premium;
+            return (
+              <button
+                key={f.key}
+                className={`material-font${writeFont === f.key ? ' on' : ''}${showLock ? ' locked' : ''}`}
+                onClick={() => pickWriteFont(f.key, f.locked)}
+              >
+                <span className="material-font-name">
+                  {showLock && <span className="material-lock" aria-hidden="true">⌷</span>}
+                  {f.label}
+                </span>
+                <span className="material-font-sample" style={{ fontFamily: f.cssFamily }}>
+                  {f.sample}
+                </span>
+              </button>
+            );
+          })}
         </div>
         {lockedNotice && (
           <p className="material-notice">{lockedNotice}</p>
@@ -186,6 +252,54 @@ export default function MaterialsView() {
             </span>
           ))}
         </div>
+      </section>
+
+      <section className="material-section premium-section">
+        <h2 className="material-h">しおり ぷらす</h2>
+        {premium ? (
+          <>
+            <p className="material-sub">
+              ありがとう。すべての書体と、たっぷりのページが ひらいています。
+            </p>
+            <p className="premium-thanks">これから 続いていく 一日一日を、ゆっくり 残していけますように。</p>
+          </>
+        ) : (
+          <>
+            <p className="material-sub">
+              鍵付きの 書体4種が ひらき、ノートは 24冊・1冊あたり 365ページまで 増やせます。
+              一度きりの お買い切り。
+            </p>
+            <ul className="premium-bullets">
+              <li>えんぴつ／マーカー／まる文字／行書ふう が使える</li>
+              <li>ノートを 24冊まで（無料は 2冊）</li>
+              <li>1冊 365ページまで（無料は 45ページ）</li>
+            </ul>
+            <div className="premium-actions">
+              <button
+                className="premium-buy"
+                onClick={onPurchase}
+                disabled={purchasing}
+              >
+                {purchasing
+                  ? 'ひらいています…'
+                  : product?.price
+                    ? `${product.price} で ひらく`
+                    : 'しおり ぷらす を ひらく'}
+              </button>
+              <button
+                className="premium-restore"
+                onClick={onRestore}
+                disabled={restoring}
+              >
+                {restoring ? '復元しています…' : '購入を 復元'}
+              </button>
+            </div>
+            <p className="premium-fineprint">
+              機種変更や再インストール後は「購入を 復元」で 元に戻せます。
+            </p>
+          </>
+        )}
+        {purchaseMsg && <p className="material-notice">{purchaseMsg}</p>}
       </section>
 
       <section className="material-section">

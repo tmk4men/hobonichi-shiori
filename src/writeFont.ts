@@ -1,3 +1,5 @@
+import { isPremium } from './premium';
+
 const KEY = 'hobonichi.writefont.v1';
 
 export type WriteFont = 'yusei' | 'kurenaido' | 'klee' | 'yomogi' | 'hachimaru' | 'kaisei';
@@ -59,10 +61,14 @@ export function isFreeFont(key: WriteFont): boolean {
   return !WRITE_FONT_DEF.find((f) => f.key === key)?.locked;
 }
 
+export function isFontUsable(key: WriteFont): boolean {
+  return isFreeFont(key) || isPremium();
+}
+
 export function loadWriteFont(): WriteFont {
   try {
     const v = localStorage.getItem(KEY) as WriteFont | null;
-    if (v && WRITE_FONT_DEF.some((f) => f.key === v && !f.locked)) return v;
+    if (v && WRITE_FONT_DEF.some((f) => f.key === v) && isFontUsable(v)) return v;
     return 'yusei';
   } catch {
     return 'yusei';
@@ -70,7 +76,7 @@ export function loadWriteFont(): WriteFont {
 }
 
 export function saveWriteFont(f: WriteFont): void {
-  if (!isFreeFont(f)) return; // ロック中のものは保存しない
+  if (!isFontUsable(f)) return; // 未解放のものは保存しない
   try {
     localStorage.setItem(KEY, f);
   } catch {

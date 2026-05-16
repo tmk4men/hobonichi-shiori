@@ -1,7 +1,7 @@
 {
   "name": "hobonichi-shiori",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor-community/admob": "^8.0.0",
     "@capacitor/android": "^8.3.3",
     "@capacitor/core": "^8.3.3",
+    "@capgo/native-purchases": "^8.3.10",
     "html2canvas": "^1.4.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"

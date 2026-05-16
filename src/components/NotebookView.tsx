@@ -12,8 +12,10 @@ import {
 } from '../storage';
 import Emoji from './Emoji';
 import ConfirmDialog from './ConfirmDialog';
+import { usePremium } from '../premium';
 
-const MAX_PAGES_PER_NOTEBOOK = 45;
+const MAX_PAGES_PER_NOTEBOOK_FREE = 45;
+const MAX_PAGES_PER_NOTEBOOK_PREMIUM = 365;
 
 interface Props {
   data: AppData;
@@ -33,6 +35,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [query, setQuery] = useState('');
   const [tagFilter, setTagFilter] = useState<Tag | 'all'>('all');
+  const premium = usePremium();
 
   const tagsUsed = useMemo(() => {
     const set = new Set<Tag>();
@@ -67,7 +70,8 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
 
   const theme = COVER_THEMES.find((t) => t.key === nb.cover)!;
 
-  const atPageLimit = pages.length >= MAX_PAGES_PER_NOTEBOOK;
+  const pageLimit = premium ? MAX_PAGES_PER_NOTEBOOK_PREMIUM : MAX_PAGES_PER_NOTEBOOK_FREE;
+  const atPageLimit = pages.length >= pageLimit;
 
   const addPage = () => {
     const today = todayStr();
@@ -144,7 +148,7 @@ export default function NotebookView({ data, notebookId, onBack, onOpenPage, onC
 
       {atPageLimit ? (
         <p className="quiet-limit">
-          このノートは {MAX_PAGES_PER_NOTEBOOK}ページで いっぱい。
+          このノートは {pageLimit}ページで いっぱい。
           <br />
           <small>つづきは、もう一冊 ひらいて。</small>
         </p>

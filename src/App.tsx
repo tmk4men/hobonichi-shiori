@@ -4,6 +4,8 @@ import { ensureTodayPage, loadData, saveData, todayStr } from './storage';
 import { loadLock } from './auth';
 import { applyWriteFont } from './writeFont';
 import { applyTextScale, applyTheme } from './theme';
+import { syncPremium } from './premium';
+import { initAds } from './ads';
 import Shelf from './components/Shelf';
 import NotebookView from './components/NotebookView';
 import PageEditor from './components/PageEditor';
@@ -74,6 +76,8 @@ export default function App() {
     applyWriteFont();
     applyTheme();
     applyTextScale();
+    syncPremium().then(() => applyWriteFont());
+    initAds();
   }, []);
 
   if (!unlocked) {
